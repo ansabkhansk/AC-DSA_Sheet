@@ -4,7 +4,7 @@ overview: "A plan to build Apna College's DSA Sheet assessment for the Technical
 todos:
   - id: p1-setup
     content: Monorepo setup (npm workspaces, tsconfig, eslint/prettier, shared pkg, docker-compose for Mongo+Redis)
-    status: pending
+    status: completed
   - id: p2-api-core
     content: "API core: env config, db/redis, logger, error handler, validate middleware, health route"
     status: pending
@@ -980,3 +980,29 @@ Template:
   - Manual checks and results:
   - BLOCKED or UNVERIFIED items, with the reason:
   - Deviations from the plan, and which clarification each one follows:
+
+- **P1**, verified on `2026-10-30`
+  - Commands and results:
+    - `node -v` → v22.17.1 (satisfies `engines.node >=20`; `.nvmrc` pins 20)
+    - `npm -v` → 11.12.0
+    - `npm install` → exit 0; single root `package-lock.json`
+    - `npm run typecheck` → exit 0 (`strict: true` in `tsconfig.base.json`; shared, api, web)
+    - `npm run lint` → exit 0
+    - `npx prettier --check .` → exit 0, no differences
+    - `cmd /c "npm run format -- --check"` → exit 0, no differences
+    - `npm run build` → exit 0; built `@dsa/shared`, then `@dsa/api`, then `@dsa/web`
+    - `docker compose -f infra/docker-compose.yml up -d` → mongo and redis running
+    - `docker compose -f infra/docker-compose.yml ps` → both `healthy`
+    - `docker compose -f infra/docker-compose.yml exec -T mongo mongosh --eval "db.runCommand({ping:1})"` → `{ ok: 1 }`
+    - `docker compose -f infra/docker-compose.yml exec -T redis redis-cli ping` → `PONG`
+    - named volumes: `dsa-sheet_mongo-data`, `dsa-sheet_redis-data`
+  - Manual checks and results:
+    - `git check-ignore -v .env` → ignored; `.env.example` exists
+    - API `node dist/server.js` listened on `http://localhost:4000` and responded with Difficulty levels Easy, Medium, Hard
+    - Web Vite placeholder imports `Difficulty` from `@dsa/shared` and renders the values
+    - Vite `/api` proxy forwards to `http://localhost:4000`
+  - BLOCKED or UNVERIFIED items, with the reason:
+    - Host `mongosh` and `redis-cli` are not on PATH. Connectivity used the same binaries inside the compose services (`docker compose exec`).
+  - Deviations from the plan, and which clarification each one follows:
+    - None of C1–C14 apply to P1. Local compose stays Mongo+Redis only (C1 default).
+    - API placeholder uses Node's built-in `http` so the process stays up for the runtime import check; Express and `/health` wait for P2.

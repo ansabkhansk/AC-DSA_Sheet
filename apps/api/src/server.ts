@@ -1,6 +1,15 @@
+import http from 'node:http';
 import { Difficulty, difficultySchema } from '@dsa/shared';
 
-// Placeholder entry point until P2 adds the Express app.
+const port = Number(process.env.PORT) || 4000;
 const levels = Object.values(Difficulty).map((level) => difficultySchema.parse(level));
+const body = `API placeholder started. Difficulty levels: ${levels.join(', ')}`;
 
-console.log(`API placeholder started. Difficulty levels: ${levels.join(', ')}`);
+const server = http.createServer((_req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end(body);
+});
+
+server.listen(port, () => {
+  console.log(`API placeholder listening on http://localhost:${port}`);
+});
