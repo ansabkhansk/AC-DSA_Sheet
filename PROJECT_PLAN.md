@@ -13,7 +13,7 @@ todos:
     status: completed
   - id: p4-sheet-data
     content: Chapter/Topic/Problem models with indexes + seed script with real DSA content
-    status: pending
+    status: completed
   - id: p5-sheet-ui
     content: "Sheet UI: chapter accordion, topics, problem rows with resource links, difficulty badges, filters"
     status: pending
@@ -1058,3 +1058,24 @@ Template:
     - C14: light default; no automatic system-theme following
     - R7: `bcryptjs` used instead of native `bcrypt`
     - Non-production `_test/protected` and `_test/admin` routes verify auth middleware acceptance criteria
+
+- **P4**, verified on `2026-10-30`
+  - Commands and results:
+    - `npm run typecheck` / `lint` / `build -w @dsa/api` → exit 0
+    - `npm run seed` twice → identical totals `chapters:10 topics:14 problems:113`; no duplicate-key errors
+    - Invalid seed difficulty rejected by Zod before writes
+    - Indexes match section 4 (+ `_id_`): chapters `slug` unique + `order`; topics `{chapterId,order}`; problems `{topicId,order}`, `chapterId`, `difficulty`, `slug` unique
+    - Difficulty mix: Easy 24 / Medium 72 / Hard 17
+    - `GET /api/v1/sheet` anonymous `200`, nested tree sorted by `order`, includes `difficulty` + `resources`
+    - `GET /api/v1/sheet/chapters/arrays` → `200`; unknown slug → `404`
+    - `GET /api/v1/problems?difficulty=Easy` → 24 Easy; `?topic=<id>` filters; invalid difficulty / malformed topic → `400`
+    - `npm run check-seed-links` → YouTube + Wikipedia articles `200`; LeetCode/Codeforces sample `403` WAF from this network (not counted dead)
+    - Manual link sample via WebFetch: `https://leetcode.com/problems/two-sum/` and `https://codeforces.com/problemset/problem/20/C` both resolve to live problem pages
+  - Manual checks and results:
+    - Sample problem `two-sum` has `chapterId` matching its topic's `chapterId`
+  - BLOCKED or UNVERIFIED items, with the reason:
+    - Automated `fetch` to leetcode.com / codeforces.com returns `403` from this environment; URLs confirmed live via WebFetch manual sample
+  - Deviations from the plan, and which clarification each one follows:
+    - C5: sheet/problems endpoints are public (no auth)
+    - C6: `topic` query filter is a topic ObjectId
+    - Article links use chapter-level Wikipedia DSA pages (stable https) alongside real LeetCode/Codeforces problem URLs

@@ -7,7 +7,9 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed": "tsx src/scripts/seed.ts",
+    "check-seed-links": "tsx src/scripts/check-seed-links.ts"
   },
   "dependencies": {
     "@dsa/shared": "^0.1.0",

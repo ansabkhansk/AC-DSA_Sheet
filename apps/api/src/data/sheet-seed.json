@@ -1,0 +1,1425 @@
+{
+  "chapters": [
+    {
+      "title": "Arrays",
+      "slug": "arrays",
+      "order": 1,
+      "description": "Core array patterns: hashing, two pointers, prefix sums, and sliding window.",
+      "topics": [
+        {
+          "title": "Array Basics",
+          "slug": "array-basics",
+          "order": 1,
+          "problems": [
+            {
+              "title": "Two Sum",
+              "slug": "two-sum",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/two-sum/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Best Time to Buy and Sell Stock",
+              "slug": "best-time-to-buy-and-sell-stock",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Contains Duplicate",
+              "slug": "contains-duplicate",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/contains-duplicate/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Maximum Subarray",
+              "slug": "maximum-subarray",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/maximum-subarray/"
+              },
+              "order": 4
+            },
+            {
+              "title": "Product of Array Except Self",
+              "slug": "product-of-array-except-self",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/product-of-array-except-self/"
+              },
+              "order": 5
+            },
+            {
+              "title": "Maximum Product Subarray",
+              "slug": "maximum-product-subarray",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/maximum-product-subarray/"
+              },
+              "order": 6
+            },
+            {
+              "title": "Find Minimum in Rotated Sorted Array",
+              "slug": "find-minimum-in-rotated-sorted-array",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/"
+              },
+              "order": 7
+            },
+            {
+              "title": "Search in Rotated Sorted Array",
+              "slug": "search-in-rotated-sorted-array",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/search-in-rotated-sorted-array/"
+              },
+              "order": 8
+            },
+            {
+              "title": "3Sum",
+              "slug": "3sum",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/3sum/"
+              },
+              "order": 9
+            },
+            {
+              "title": "Container With Most Water",
+              "slug": "container-with-most-water",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/container-with-most-water/"
+              },
+              "order": 10
+            },
+            {
+              "title": "Trapping Rain Water",
+              "slug": "trapping-rain-water",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/trapping-rain-water/"
+              },
+              "order": 11
+            },
+            {
+              "title": "First Missing Positive",
+              "slug": "first-missing-positive",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/first-missing-positive/"
+              },
+              "order": 12
+            }
+          ]
+        },
+        {
+          "title": "Sliding Window",
+          "slug": "sliding-window",
+          "order": 2,
+          "problems": [
+            {
+              "title": "Best Time to Buy and Sell Stock II",
+              "slug": "best-time-to-buy-and-sell-stock-ii",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Longest Substring Without Repeating Characters",
+              "slug": "longest-substring-without-repeating-characters",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/longest-substring-without-repeating-characters/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Minimum Size Subarray Sum",
+              "slug": "minimum-size-subarray-sum",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/minimum-size-subarray-sum/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Find All Anagrams in a String",
+              "slug": "find-all-anagrams-in-a-string",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/find-all-anagrams-in-a-string/"
+              },
+              "order": 4
+            },
+            {
+              "title": "Sliding Window Maximum",
+              "slug": "sliding-window-maximum",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=37LxFiYarHw",
+                "article": "https://en.wikipedia.org/wiki/Array_data_structure",
+                "leetcode": "https://leetcode.com/problems/sliding-window-maximum/"
+              },
+              "order": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Strings",
+      "slug": "strings",
+      "order": 2,
+      "description": "String manipulation, hashing, and classic pattern problems.",
+      "topics": [
+        {
+          "title": "String Patterns",
+          "slug": "string-patterns",
+          "order": 1,
+          "problems": [
+            {
+              "title": "Valid Anagram",
+              "slug": "valid-anagram",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=q5a5eigMPUU",
+                "article": "https://en.wikipedia.org/wiki/String_(computer_science)",
+                "leetcode": "https://leetcode.com/problems/valid-anagram/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Valid Palindrome",
+              "slug": "valid-palindrome",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=q5a5eigMPUU",
+                "article": "https://en.wikipedia.org/wiki/String_(computer_science)",
+                "leetcode": "https://leetcode.com/problems/valid-palindrome/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Longest Common Prefix",
+              "slug": "longest-common-prefix",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=q5a5eigMPUU",
+                "article": "https://en.wikipedia.org/wiki/String_(computer_science)",
+                "leetcode": "https://leetcode.com/problems/longest-common-prefix/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Reverse Words in a String",
+              "slug": "reverse-words-in-a-string",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=q5a5eigMPUU",
+                "article": "https://en.wikipedia.org/wiki/String_(computer_science)",
+                "leetcode": "https://leetcode.com/problems/reverse-words-in-a-string/"
+              },
+              "order": 4
+            },
+            {
+              "title": "Group Anagrams",
+              "slug": "group-anagrams",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=q5a5eigMPUU",
+                "article": "https://en.wikipedia.org/wiki/String_(computer_science)",
+                "leetcode": "https://leetcode.com/problems/group-anagrams/"
+              },
+              "order": 5
+            },
+            {
+              "title": "Longest Palindromic Substring",
+              "slug": "longest-palindromic-substring",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=q5a5eigMPUU",
+                "article": "https://en.wikipedia.org/wiki/String_(computer_science)",
+                "leetcode": "https://leetcode.com/problems/longest-palindromic-substring/"
+              },
+              "order": 6
+            },
+            {
+              "title": "Palindromic Substrings",
+              "slug": "palindromic-substrings",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=q5a5eigMPUU",
+                "article": "https://en.wikipedia.org/wiki/String_(computer_science)",
+                "leetcode": "https://leetcode.com/problems/palindromic-substrings/"
+              },
+              "order": 7
+            },
+            {
+              "title": "Minimum Window Substring",
+              "slug": "minimum-window-substring",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=q5a5eigMPUU",
+                "article": "https://en.wikipedia.org/wiki/String_(computer_science)",
+                "leetcode": "https://leetcode.com/problems/minimum-window-substring/"
+              },
+              "order": 8
+            },
+            {
+              "title": "Wildcard Matching",
+              "slug": "wildcard-matching",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=q5a5eigMPUU",
+                "article": "https://en.wikipedia.org/wiki/String_(computer_science)",
+                "leetcode": "https://leetcode.com/problems/wildcard-matching/"
+              },
+              "order": 9
+            },
+            {
+              "title": "String to Integer (atoi)",
+              "slug": "string-to-integer-atoi",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=q5a5eigMPUU",
+                "article": "https://en.wikipedia.org/wiki/String_(computer_science)",
+                "leetcode": "https://leetcode.com/problems/string-to-integer-atoi/"
+              },
+              "order": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Linked List",
+      "slug": "linked-list",
+      "order": 3,
+      "description": "Singly and doubly linked list techniques for interviews.",
+      "topics": [
+        {
+          "title": "Linked List Core",
+          "slug": "linked-list-core",
+          "order": 1,
+          "problems": [
+            {
+              "title": "Reverse Linked List",
+              "slug": "reverse-linked-list",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=Hj_r2uNrbn8",
+                "article": "https://en.wikipedia.org/wiki/Linked_list",
+                "leetcode": "https://leetcode.com/problems/reverse-linked-list/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Merge Two Sorted Lists",
+              "slug": "merge-two-sorted-lists",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=Hj_r2uNrbn8",
+                "article": "https://en.wikipedia.org/wiki/Linked_list",
+                "leetcode": "https://leetcode.com/problems/merge-two-sorted-lists/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Linked List Cycle",
+              "slug": "linked-list-cycle",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=Hj_r2uNrbn8",
+                "article": "https://en.wikipedia.org/wiki/Linked_list",
+                "leetcode": "https://leetcode.com/problems/linked-list-cycle/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Remove Nth Node From End of List",
+              "slug": "remove-nth-node-from-end-of-list",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=Hj_r2uNrbn8",
+                "article": "https://en.wikipedia.org/wiki/Linked_list",
+                "leetcode": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/"
+              },
+              "order": 4
+            },
+            {
+              "title": "Reorder List",
+              "slug": "reorder-list",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=Hj_r2uNrbn8",
+                "article": "https://en.wikipedia.org/wiki/Linked_list",
+                "leetcode": "https://leetcode.com/problems/reorder-list/"
+              },
+              "order": 5
+            },
+            {
+              "title": "Add Two Numbers",
+              "slug": "add-two-numbers",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=Hj_r2uNrbn8",
+                "article": "https://en.wikipedia.org/wiki/Linked_list",
+                "leetcode": "https://leetcode.com/problems/add-two-numbers/"
+              },
+              "order": 6
+            },
+            {
+              "title": "Copy List with Random Pointer",
+              "slug": "copy-list-with-random-pointer",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=Hj_r2uNrbn8",
+                "article": "https://en.wikipedia.org/wiki/Linked_list",
+                "leetcode": "https://leetcode.com/problems/copy-list-with-random-pointer/"
+              },
+              "order": 7
+            },
+            {
+              "title": "LRU Cache",
+              "slug": "lru-cache",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=Hj_r2uNrbn8",
+                "article": "https://en.wikipedia.org/wiki/Linked_list",
+                "leetcode": "https://leetcode.com/problems/lru-cache/"
+              },
+              "order": 8
+            },
+            {
+              "title": "Merge k Sorted Lists",
+              "slug": "merge-k-sorted-lists",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=Hj_r2uNrbn8",
+                "article": "https://en.wikipedia.org/wiki/Linked_list",
+                "leetcode": "https://leetcode.com/problems/merge-k-sorted-lists/"
+              },
+              "order": 9
+            },
+            {
+              "title": "Reverse Nodes in k-Group",
+              "slug": "reverse-nodes-in-k-group",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=Hj_r2uNrbn8",
+                "article": "https://en.wikipedia.org/wiki/Linked_list",
+                "leetcode": "https://leetcode.com/problems/reverse-nodes-in-k-group/"
+              },
+              "order": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Stacks and Queues",
+      "slug": "stacks-and-queues",
+      "order": 4,
+      "description": "Monotonic stacks, next greater element, and queue simulations.",
+      "topics": [
+        {
+          "title": "Stack Patterns",
+          "slug": "stack-patterns",
+          "order": 1,
+          "problems": [
+            {
+              "title": "Valid Parentheses",
+              "slug": "valid-parentheses",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/valid-parentheses/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Min Stack",
+              "slug": "min-stack",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/min-stack/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Evaluate Reverse Polish Notation",
+              "slug": "evaluate-reverse-polish-notation",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/evaluate-reverse-polish-notation/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Daily Temperatures",
+              "slug": "daily-temperatures",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/daily-temperatures/"
+              },
+              "order": 4
+            },
+            {
+              "title": "Next Greater Element I",
+              "slug": "next-greater-element-i",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/next-greater-element-i/"
+              },
+              "order": 5
+            },
+            {
+              "title": "Asteroid Collision",
+              "slug": "asteroid-collision",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/asteroid-collision/"
+              },
+              "order": 6
+            },
+            {
+              "title": "Largest Rectangle in Histogram",
+              "slug": "largest-rectangle-in-histogram",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/largest-rectangle-in-histogram/"
+              },
+              "order": 7
+            },
+            {
+              "title": "Basic Calculator",
+              "slug": "basic-calculator",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/basic-calculator/"
+              },
+              "order": 8
+            }
+          ]
+        },
+        {
+          "title": "Queue Patterns",
+          "slug": "queue-patterns",
+          "order": 2,
+          "problems": [
+            {
+              "title": "Implement Queue using Stacks",
+              "slug": "implement-queue-using-stacks",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/implement-queue-using-stacks/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Design Circular Queue",
+              "slug": "design-circular-queue",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/design-circular-queue/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Time Needed to Buy Tickets",
+              "slug": "time-needed-to-buy-tickets",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/time-needed-to-buy-tickets/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Number of Recent Calls",
+              "slug": "number-of-recent-calls",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+                "article": "https://en.wikipedia.org/wiki/Stack_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/number-of-recent-calls/"
+              },
+              "order": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Recursion and Backtracking",
+      "slug": "recursion-and-backtracking",
+      "order": 5,
+      "description": "Decision trees, subsets, permutations, and constraint search.",
+      "topics": [
+        {
+          "title": "Backtracking",
+          "slug": "backtracking",
+          "order": 1,
+          "problems": [
+            {
+              "title": "Subsets",
+              "slug": "subsets",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oK_XtfXPkqw",
+                "article": "https://en.wikipedia.org/wiki/Backtracking",
+                "leetcode": "https://leetcode.com/problems/subsets/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Combination Sum",
+              "slug": "combination-sum",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oK_XtfXPkqw",
+                "article": "https://en.wikipedia.org/wiki/Backtracking",
+                "leetcode": "https://leetcode.com/problems/combination-sum/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Combination Sum II",
+              "slug": "combination-sum-ii",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oK_XtfXPkqw",
+                "article": "https://en.wikipedia.org/wiki/Backtracking",
+                "leetcode": "https://leetcode.com/problems/combination-sum-ii/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Permutations",
+              "slug": "permutations",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oK_XtfXPkqw",
+                "article": "https://en.wikipedia.org/wiki/Backtracking",
+                "leetcode": "https://leetcode.com/problems/permutations/"
+              },
+              "order": 4
+            },
+            {
+              "title": "Permutations II",
+              "slug": "permutations-ii",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oK_XtfXPkqw",
+                "article": "https://en.wikipedia.org/wiki/Backtracking",
+                "leetcode": "https://leetcode.com/problems/permutations-ii/"
+              },
+              "order": 5
+            },
+            {
+              "title": "Word Search",
+              "slug": "word-search",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oK_XtfXPkqw",
+                "article": "https://en.wikipedia.org/wiki/Backtracking",
+                "leetcode": "https://leetcode.com/problems/word-search/"
+              },
+              "order": 6
+            },
+            {
+              "title": "Palindrome Partitioning",
+              "slug": "palindrome-partitioning",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oK_XtfXPkqw",
+                "article": "https://en.wikipedia.org/wiki/Backtracking",
+                "leetcode": "https://leetcode.com/problems/palindrome-partitioning/"
+              },
+              "order": 7
+            },
+            {
+              "title": "N-Queens",
+              "slug": "n-queens",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oK_XtfXPkqw",
+                "article": "https://en.wikipedia.org/wiki/Backtracking",
+                "leetcode": "https://leetcode.com/problems/n-queens/"
+              },
+              "order": 8
+            },
+            {
+              "title": "Sudoku Solver",
+              "slug": "sudoku-solver",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oK_XtfXPkqw",
+                "article": "https://en.wikipedia.org/wiki/Backtracking",
+                "leetcode": "https://leetcode.com/problems/sudoku-solver/"
+              },
+              "order": 9
+            },
+            {
+              "title": "Letter Combinations of a Phone Number",
+              "slug": "letter-combinations-of-a-phone-number",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oK_XtfXPkqw",
+                "article": "https://en.wikipedia.org/wiki/Backtracking",
+                "leetcode": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/"
+              },
+              "order": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Binary Trees",
+      "slug": "binary-trees",
+      "order": 6,
+      "description": "Traversals, path problems, and binary tree construction.",
+      "topics": [
+        {
+          "title": "Tree Traversals",
+          "slug": "tree-traversals",
+          "order": 1,
+          "problems": [
+            {
+              "title": "Maximum Depth of Binary Tree",
+              "slug": "maximum-depth-of-binary-tree",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oVT_Z0_5OzI",
+                "article": "https://en.wikipedia.org/wiki/Binary_tree",
+                "leetcode": "https://leetcode.com/problems/maximum-depth-of-binary-tree/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Same Tree",
+              "slug": "same-tree",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oVT_Z0_5OzI",
+                "article": "https://en.wikipedia.org/wiki/Binary_tree",
+                "leetcode": "https://leetcode.com/problems/same-tree/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Invert Binary Tree",
+              "slug": "invert-binary-tree",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oVT_Z0_5OzI",
+                "article": "https://en.wikipedia.org/wiki/Binary_tree",
+                "leetcode": "https://leetcode.com/problems/invert-binary-tree/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Binary Tree Level Order Traversal",
+              "slug": "binary-tree-level-order-traversal",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oVT_Z0_5OzI",
+                "article": "https://en.wikipedia.org/wiki/Binary_tree",
+                "leetcode": "https://leetcode.com/problems/binary-tree-level-order-traversal/"
+              },
+              "order": 4
+            },
+            {
+              "title": "Binary Tree Right Side View",
+              "slug": "binary-tree-right-side-view",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oVT_Z0_5OzI",
+                "article": "https://en.wikipedia.org/wiki/Binary_tree",
+                "leetcode": "https://leetcode.com/problems/binary-tree-right-side-view/"
+              },
+              "order": 5
+            },
+            {
+              "title": "Count Good Nodes in Binary Tree",
+              "slug": "count-good-nodes-in-binary-tree",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oVT_Z0_5OzI",
+                "article": "https://en.wikipedia.org/wiki/Binary_tree",
+                "leetcode": "https://leetcode.com/problems/count-good-nodes-in-binary-tree/"
+              },
+              "order": 6
+            },
+            {
+              "title": "Validate Binary Search Tree",
+              "slug": "validate-binary-search-tree",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oVT_Z0_5OzI",
+                "article": "https://en.wikipedia.org/wiki/Binary_tree",
+                "leetcode": "https://leetcode.com/problems/validate-binary-search-tree/"
+              },
+              "order": 7
+            },
+            {
+              "title": "Lowest Common Ancestor of a Binary Tree",
+              "slug": "lowest-common-ancestor-of-a-binary-tree",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oVT_Z0_5OzI",
+                "article": "https://en.wikipedia.org/wiki/Binary_tree",
+                "leetcode": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/"
+              },
+              "order": 8
+            },
+            {
+              "title": "Binary Tree Maximum Path Sum",
+              "slug": "binary-tree-maximum-path-sum",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oVT_Z0_5OzI",
+                "article": "https://en.wikipedia.org/wiki/Binary_tree",
+                "leetcode": "https://leetcode.com/problems/binary-tree-maximum-path-sum/"
+              },
+              "order": 9
+            },
+            {
+              "title": "Serialize and Deserialize Binary Tree",
+              "slug": "serialize-and-deserialize-binary-tree",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oVT_Z0_5OzI",
+                "article": "https://en.wikipedia.org/wiki/Binary_tree",
+                "leetcode": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/"
+              },
+              "order": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Binary Search Trees",
+      "slug": "binary-search-trees",
+      "order": 7,
+      "description": "BST properties, construction, and ordered traversal tricks.",
+      "topics": [
+        {
+          "title": "BST Problems",
+          "slug": "bst-problems",
+          "order": 1,
+          "problems": [
+            {
+              "title": "Search in a Binary Search Tree",
+              "slug": "search-in-a-binary-search-tree",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=p7-9UvDQZ3w",
+                "article": "https://en.wikipedia.org/wiki/Binary_search_tree",
+                "leetcode": "https://leetcode.com/problems/search-in-a-binary-search-tree/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Insert into a Binary Search Tree",
+              "slug": "insert-into-a-binary-search-tree",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=p7-9UvDQZ3w",
+                "article": "https://en.wikipedia.org/wiki/Binary_search_tree",
+                "leetcode": "https://leetcode.com/problems/insert-into-a-binary-search-tree/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Delete Node in a BST",
+              "slug": "delete-node-in-a-bst",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=p7-9UvDQZ3w",
+                "article": "https://en.wikipedia.org/wiki/Binary_search_tree",
+                "leetcode": "https://leetcode.com/problems/delete-node-in-a-bst/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Kth Smallest Element in a BST",
+              "slug": "kth-smallest-element-in-a-bst",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=p7-9UvDQZ3w",
+                "article": "https://en.wikipedia.org/wiki/Binary_search_tree",
+                "leetcode": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/"
+              },
+              "order": 4
+            },
+            {
+              "title": "Convert Sorted Array to Binary Search Tree",
+              "slug": "convert-sorted-array-to-binary-search-tree",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=p7-9UvDQZ3w",
+                "article": "https://en.wikipedia.org/wiki/Binary_search_tree",
+                "leetcode": "https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/"
+              },
+              "order": 5
+            },
+            {
+              "title": "Lowest Common Ancestor of a Binary Search Tree",
+              "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=p7-9UvDQZ3w",
+                "article": "https://en.wikipedia.org/wiki/Binary_search_tree",
+                "leetcode": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/"
+              },
+              "order": 6
+            },
+            {
+              "title": "Recover Binary Search Tree",
+              "slug": "recover-binary-search-tree",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=p7-9UvDQZ3w",
+                "article": "https://en.wikipedia.org/wiki/Binary_search_tree",
+                "leetcode": "https://leetcode.com/problems/recover-binary-search-tree/"
+              },
+              "order": 7
+            },
+            {
+              "title": "Unique Binary Search Trees",
+              "slug": "unique-binary-search-trees",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=p7-9UvDQZ3w",
+                "article": "https://en.wikipedia.org/wiki/Binary_search_tree",
+                "leetcode": "https://leetcode.com/problems/unique-binary-search-trees/"
+              },
+              "order": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Heaps and Hashing",
+      "slug": "heaps-and-hashing",
+      "order": 8,
+      "description": "Priority queues, top-k patterns, and hash map design.",
+      "topics": [
+        {
+          "title": "Heap Patterns",
+          "slug": "heap-patterns",
+          "order": 1,
+          "problems": [
+            {
+              "title": "Kth Largest Element in an Array",
+              "slug": "kth-largest-element-in-an-array",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+                "leetcode": "https://leetcode.com/problems/kth-largest-element-in-an-array/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Top K Frequent Elements",
+              "slug": "top-k-frequent-elements",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+                "leetcode": "https://leetcode.com/problems/top-k-frequent-elements/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Find Median from Data Stream",
+              "slug": "find-median-from-data-stream",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+                "leetcode": "https://leetcode.com/problems/find-median-from-data-stream/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Task Scheduler",
+              "slug": "task-scheduler",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+                "leetcode": "https://leetcode.com/problems/task-scheduler/"
+              },
+              "order": 4
+            },
+            {
+              "title": "K Closest Points to Origin",
+              "slug": "k-closest-points-to-origin",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+                "leetcode": "https://leetcode.com/problems/k-closest-points-to-origin/"
+              },
+              "order": 5
+            },
+            {
+              "title": "Last Stone Weight",
+              "slug": "last-stone-weight",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+                "leetcode": "https://leetcode.com/problems/last-stone-weight/"
+              },
+              "order": 6
+            }
+          ]
+        },
+        {
+          "title": "Hashing",
+          "slug": "hashing",
+          "order": 2,
+          "problems": [
+            {
+              "title": "Subarray Sum Equals K",
+              "slug": "subarray-sum-equals-k",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+                "leetcode": "https://leetcode.com/problems/subarray-sum-equals-k/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Longest Consecutive Sequence",
+              "slug": "longest-consecutive-sequence",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+                "leetcode": "https://leetcode.com/problems/longest-consecutive-sequence/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Design HashMap",
+              "slug": "design-hashmap",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+                "leetcode": "https://leetcode.com/problems/design-hashmap/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Four Sum II",
+              "slug": "4sum-ii",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Heap_(data_structure)",
+                "leetcode": "https://leetcode.com/problems/4sum-ii/"
+              },
+              "order": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Graphs",
+      "slug": "graphs",
+      "order": 9,
+      "description": "BFS, DFS, topological sort, and shortest paths.",
+      "topics": [
+        {
+          "title": "Graph Traversal",
+          "slug": "graph-traversal",
+          "order": 1,
+          "problems": [
+            {
+              "title": "Number of Islands",
+              "slug": "number-of-islands",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/number-of-islands/"
+              },
+              "order": 1
+            },
+            {
+              "title": "Clone Graph",
+              "slug": "clone-graph",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/clone-graph/"
+              },
+              "order": 2
+            },
+            {
+              "title": "Course Schedule",
+              "slug": "course-schedule",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/course-schedule/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Course Schedule II",
+              "slug": "course-schedule-ii",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/course-schedule-ii/"
+              },
+              "order": 4
+            },
+            {
+              "title": "Pacific Atlantic Water Flow",
+              "slug": "pacific-atlantic-water-flow",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/pacific-atlantic-water-flow/"
+              },
+              "order": 5
+            },
+            {
+              "title": "Word Ladder",
+              "slug": "word-ladder",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/word-ladder/"
+              },
+              "order": 6
+            },
+            {
+              "title": "Network Delay Time",
+              "slug": "network-delay-time",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/network-delay-time/"
+              },
+              "order": 7
+            },
+            {
+              "title": "Cheapest Flights Within K Stops",
+              "slug": "cheapest-flights-within-k-stops",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/cheapest-flights-within-k-stops/"
+              },
+              "order": 8
+            },
+            {
+              "title": "Rotting Oranges",
+              "slug": "rotting-oranges",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/rotting-oranges/"
+              },
+              "order": 9
+            },
+            {
+              "title": "Surrounded Regions",
+              "slug": "surrounded-regions",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "leetcode": "https://leetcode.com/problems/surrounded-regions/"
+              },
+              "order": 10
+            }
+          ]
+        },
+        {
+          "title": "Codeforces Graph Practice",
+          "slug": "codeforces-graph-practice",
+          "order": 2,
+          "problems": [
+            {
+              "title": "Dijkstra?",
+              "slug": "cf-20c-dijkstra",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "codeforces": "https://codeforces.com/problemset/problem/20/C"
+              },
+              "order": 1
+            },
+            {
+              "title": "Kefa and Park",
+              "slug": "cf-580c-kefa-and-park",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "codeforces": "https://codeforces.com/problemset/problem/580/C"
+              },
+              "order": 2
+            },
+            {
+              "title": "News Distribution",
+              "slug": "cf-1167c-news-distribution",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=tWVWeAqZ0WU",
+                "article": "https://en.wikipedia.org/wiki/Graph_(abstract_data_type)",
+                "codeforces": "https://codeforces.com/problemset/problem/1167/C"
+              },
+              "order": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Dynamic Programming",
+      "slug": "dynamic-programming",
+      "order": 10,
+      "description": "1D/2D DP, knapsack-style transitions, and classic sequences.",
+      "topics": [
+        {
+          "title": "1D and 2D DP",
+          "slug": "1d-and-2d-dp",
+          "order": 1,
+          "problems": [
+            {
+              "title": "Climbing Stairs",
+              "slug": "climbing-stairs",
+              "difficulty": "Easy",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/climbing-stairs/"
+              },
+              "order": 1
+            },
+            {
+              "title": "House Robber",
+              "slug": "house-robber",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/house-robber/"
+              },
+              "order": 2
+            },
+            {
+              "title": "House Robber II",
+              "slug": "house-robber-ii",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/house-robber-ii/"
+              },
+              "order": 3
+            },
+            {
+              "title": "Coin Change",
+              "slug": "coin-change",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/coin-change/"
+              },
+              "order": 4
+            },
+            {
+              "title": "Longest Increasing Subsequence",
+              "slug": "longest-increasing-subsequence",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/longest-increasing-subsequence/"
+              },
+              "order": 5
+            },
+            {
+              "title": "Word Break",
+              "slug": "word-break",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/word-break/"
+              },
+              "order": 6
+            },
+            {
+              "title": "Unique Paths",
+              "slug": "unique-paths",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/unique-paths/"
+              },
+              "order": 7
+            },
+            {
+              "title": "Unique Paths II",
+              "slug": "unique-paths-ii",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/unique-paths-ii/"
+              },
+              "order": 8
+            },
+            {
+              "title": "Edit Distance",
+              "slug": "edit-distance",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/edit-distance/"
+              },
+              "order": 9
+            },
+            {
+              "title": "Longest Common Subsequence",
+              "slug": "longest-common-subsequence",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/longest-common-subsequence/"
+              },
+              "order": 10
+            },
+            {
+              "title": "Decode Ways",
+              "slug": "decode-ways",
+              "difficulty": "Medium",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/decode-ways/"
+              },
+              "order": 11
+            },
+            {
+              "title": "Burst Balloons",
+              "slug": "burst-balloons",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/burst-balloons/"
+              },
+              "order": 12
+            },
+            {
+              "title": "Regular Expression Matching",
+              "slug": "regular-expression-matching",
+              "difficulty": "Hard",
+              "resources": {
+                "youtube": "https://www.youtube.com/watch?v=oBt53YbR9KQ",
+                "article": "https://en.wikipedia.org/wiki/Dynamic_programming",
+                "leetcode": "https://leetcode.com/problems/regular-expression-matching/"
+              },
+              "order": 13
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

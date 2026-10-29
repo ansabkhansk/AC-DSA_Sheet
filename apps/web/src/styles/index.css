@@ -13,6 +13,12 @@
   --color-accent-hover: #0c5945;
   --color-danger: #b42318;
   --color-focus: #1d6fb5;
+  --color-easy-bg: #d1fae5;
+  --color-easy-text: #065f46;
+  --color-medium-bg: #fef3c7;
+  --color-medium-text: #92400e;
+  --color-hard-bg: #fee2e2;
+  --color-hard-text: #991b1b;
 }
 
 .dark {
@@ -26,6 +32,12 @@
   --color-accent-hover: #57c8a7;
   --color-danger: #f97066;
   --color-focus: #6cb2eb;
+  --color-easy-bg: #064e3b;
+  --color-easy-text: #6ee7b7;
+  --color-medium-bg: #78350f;
+  --color-medium-text: #fcd34d;
+  --color-hard-bg: #7f1d1d;
+  --color-hard-text: #fca5a5;
 }
 
 @layer base {

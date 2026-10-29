@@ -16,6 +16,8 @@
     "typecheck": "npm run build -w @dsa/shared && npm run typecheck --workspaces",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "seed": "npm run seed -w @dsa/api",
+    "check-seed-links": "npm run check-seed-links -w @dsa/api",
     "test": "npm run test --workspaces --if-present"
   },
   "devDependencies": {

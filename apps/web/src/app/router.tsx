@@ -5,6 +5,7 @@ import { NotFoundPage } from '../features/auth/pages/NotFoundPage';
 import { RegisterPage } from '../features/auth/pages/RegisterPage';
 import { UnauthorizedPage } from '../features/auth/pages/UnauthorizedPage';
 import { DashboardPage } from '../features/dashboard/pages/DashboardPage';
+import { SheetPage } from '../features/sheet/pages/SheetPage';
 import { useAuthStore } from '../features/auth/store';
 import { Spinner } from '../components/ui/Spinner';
 import { ProtectedRoute } from './ProtectedRoute';
@@ -29,7 +30,7 @@ export function AppRouter() {
     <BrowserRouter>
       <AppShell>
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<Navigate to="/sheet" replace />} />
           <Route
             path="/login"
             element={
@@ -54,6 +55,8 @@ export function AppRouter() {
               </ProtectedRoute>
             }
           />
+          <Route path="/sheet" element={<SheetPage />} />
+          <Route path="/sheet/:chapterSlug" element={<SheetPage />} />
           <Route path="/401" element={<UnauthorizedPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

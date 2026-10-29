@@ -52,6 +52,11 @@ async function refreshSession(): Promise<void> {
   await refreshPromise;
 }
 
+function shouldSkipLoginRedirect(url?: string): boolean {
+  // /auth/me is used for session bootstrap; anonymous visitors must stay on public pages like /sheet.
+  return Boolean(url?.includes('/api/v1/auth/me'));
+}
+
 function redirectToLogin(): void {
   const path = window.location.pathname;
   if (path === '/login' || path === '/register' || path === '/401') {
@@ -83,16 +88,22 @@ http.interceptors.response.use(
           try {
             return await http.request(config);
           } catch (retryError) {
-            redirectToLogin();
+            if (!shouldSkipLoginRedirect(config.url)) {
+              redirectToLogin();
+            }
             return Promise.reject(retryError);
           }
         }
-        redirectToLogin();
+        if (!shouldSkipLoginRedirect(config.url)) {
+          redirectToLogin();
+        }
         return Promise.reject(error);
       }
     }
 
-    redirectToLogin();
+    if (!shouldSkipLoginRedirect(config.url)) {
+      redirectToLogin();
+    }
     return Promise.reject(error);
   },
 );
