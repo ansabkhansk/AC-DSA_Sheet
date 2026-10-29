@@ -1,0 +1,32 @@
+{
+  "name": "dsa-sheet",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/shared",
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run build -w @dsa/shared && concurrently -n api,web \"npm run dev -w @dsa/api\" \"npm run dev -w @dsa/web\"",
+    "build": "npm run build -w @dsa/shared && npm run build -w @dsa/api && npm run build -w @dsa/web",
+    "typecheck": "npm run build -w @dsa/shared && npm run typecheck --workspaces",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^10.0.6",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.1"
+  }
+}

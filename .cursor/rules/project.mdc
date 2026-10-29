@@ -1,0 +1,43 @@
+---
+description: Project-wide coding, architecture, and UI/UX rules
+alwaysApply: true
+---
+
+## Source of Truth
+
+- Follow the root `RULE.md` for all coding, architecture, and UI/UX decisions.
+- Follow the root `PROJECT_PLAN.md` for the project roadmap, milestones, and implementation order.
+- Before starting work, inspect the relevant project files and read the applicable instructions.
+- Treat all tasks as NOT STARTED unless their implementation has been verified. Do not rely on checkmarks in an external planning interface as proof of completion.
+
+## Coding Rules
+
+- Preserve the existing folder structure and architecture unless a change is necessary and justified.
+- Prefer simple, readable React and TypeScript code.
+- Avoid unnecessary abstractions, dependencies, design patterns, and complex logic.
+- Add comments only for genuinely complex or non-obvious logic.
+- Reuse existing components, utilities, and dependencies when appropriate.
+- Make the smallest change that fully satisfies the requirement.
+- Do not refactor unrelated code or implement future milestones prematurely.
+
+## UI/UX Rules
+
+- Maintain a calm, balanced, student-friendly design with accessible light and dark themes. Light is the default; dark is available through a visible theme toggle, and the user's choice persists across reloads (see `RULE.md`).
+- Use restrained colors, readable fonts, consistent spacing, and minimal gradients.
+- Keep navigation, buttons, URLs, authentication, and error handling clear and consistent.
+- Follow the existing styling and routing conventions.
+
+## Execution Workflow
+
+- Follow the milestones in `PROJECT_PLAN.md` in their specified order.
+- Implement only the current milestone and its necessary dependencies.
+- Verify the implementation before marking a task complete.
+- Run relevant checks and report their actual results.
+- Do not claim that a command, test, or build passed unless it was executed successfully.
+- Do not regenerate the roadmap or introduce unrelated features.
+
+## Conflict Resolution
+
+- Follow the user's explicit instructions for the current task.
+- If an instruction conflicts with `RULE.md` or `PROJECT_PLAN.md`, explain the conflict and ask for clarification when necessary.
+- Do not make significant architectural assumptions when essential information is missing.
