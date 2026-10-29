@@ -32,9 +32,14 @@ export function AppNav() {
               Sheet
             </NavLink>
             {user ? (
-              <NavLink to="/dashboard" className={navLinkClass}>
-                Dashboard
-              </NavLink>
+              <>
+                <NavLink to="/dashboard" className={navLinkClass}>
+                  Dashboard
+                </NavLink>
+                <NavLink to="/calendar" className={navLinkClass}>
+                  Calendar
+                </NavLink>
+              </>
             ) : null}
           </nav>
         </div>

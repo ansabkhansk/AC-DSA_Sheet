@@ -98,3 +98,38 @@ export function useToggleProgress(onErrorMessage?: (message: string) => void) {
     },
   });
 }
+
+/** Mark a problem for spaced revision (+1/+3/+7 calendar plans). */
+export function useMarkRevisit(onErrorMessage?: (message: string) => void) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (problemId: string) => {
+      await upsertProgress(problemId, ProgressStatus.revisit);
+    },
+    onMutate: async (problemId) => {
+      await queryClient.cancelQueries({ queryKey: progressKeys.me });
+      const previous = queryClient.getQueryData<MyProgress>(progressKeys.me);
+      queryClient.setQueryData<MyProgress>(progressKeys.me, (current) => {
+        const base = current ?? { completedProblemIds: [], lastActivity: null };
+        const ids = new Set(base.completedProblemIds);
+        ids.add(problemId);
+        return { ...base, completedProblemIds: [...ids] };
+      });
+      return { previous };
+    },
+    onError: (_error, _problemId, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(progressKeys.me, context.previous);
+      }
+      onErrorMessage?.('We could not schedule a revisit. Please try again.');
+    },
+    onSettled: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: progressKeys.me }),
+        queryClient.invalidateQueries({ queryKey: progressKeys.stats }),
+        queryClient.invalidateQueries({ queryKey: ['plans'] }),
+      ]);
+    },
+  });
+}

@@ -8,10 +8,12 @@ export async function getMe(req: Request, res: Response): Promise<void> {
 }
 
 export async function upsert(req: Request, res: Response): Promise<void> {
+  const timeZone = resolveTimezone(req.headers['x-timezone']);
   const data = await progressService.upsertProgress(
     req.user!.id,
     req.params.problemId,
     req.body.status,
+    timeZone,
   );
   res.status(200).json({ success: true, data });
 }

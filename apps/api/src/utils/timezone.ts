@@ -33,6 +33,26 @@ export function shiftDateKey(dateKey: string, deltaDays: number): string {
   return utc.toISOString().slice(0, 10);
 }
 
+/** Store plan calendar days as UTC midnight of that `YYYY-MM-DD` (C7). */
+export function parseDateKeyToUtc(dateKey: string): Date {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
+export function formatUtcDateKey(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+export function eachDateKey(from: string, to: string): string[] {
+  const keys: string[] = [];
+  let cursor = from;
+  while (cursor <= to) {
+    keys.push(cursor);
+    cursor = shiftDateKey(cursor, 1);
+  }
+  return keys;
+}
+
 /**
  * Streak of consecutive local calendar days with activity, ending on today
  * or yesterday (if today has none yet).

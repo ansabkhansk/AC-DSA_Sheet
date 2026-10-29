@@ -20,6 +20,7 @@ type ProblemRowProps = {
   showCheckbox?: boolean;
   completed?: boolean;
   onToggleDone?: (done: boolean) => void;
+  onMarkRevisit?: () => void;
   checkboxDisabled?: boolean;
 };
 
@@ -28,6 +29,7 @@ export function ProblemRow({
   showCheckbox = false,
   completed = false,
   onToggleDone,
+  onMarkRevisit,
   checkboxDisabled = false,
 }: ProblemRowProps) {
   const { resources } = problem;
@@ -49,7 +51,18 @@ export function ProblemRow({
         ) : null}
         <div className="min-w-0 space-y-2">
           <p className="truncate font-medium text-text">{problem.title}</p>
-          <DifficultyBadge difficulty={problem.difficulty} />
+          <div className="flex flex-wrap items-center gap-2">
+            <DifficultyBadge difficulty={problem.difficulty} />
+            {showCheckbox && onMarkRevisit ? (
+              <button
+                type="button"
+                className="rounded-md border border-border bg-bg px-2 py-0.5 text-xs font-medium text-text hover:bg-surface"
+                onClick={onMarkRevisit}
+              >
+                Mark revisit
+              </button>
+            ) : null}
+          </div>
         </div>
       </div>
       <div className="flex flex-wrap gap-2">

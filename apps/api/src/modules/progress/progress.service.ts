@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
-import { Difficulty, type ProgressStatus } from '@dsa/shared';
+import { Difficulty, ProgressStatus as ProgressStatusEnum, type ProgressStatus } from '@dsa/shared';
 import { ApiError } from '../../utils/ApiError.js';
 import { computeStreak, shiftDateKey, toDateKey } from '../../utils/timezone.js';
+import { scheduleRevisions } from '../calendar/calendar.service.js';
 import { ChapterModel } from '../sheet/chapter.model.js';
 import { ProblemModel } from '../sheet/problem.model.js';
 import { UserModel } from '../users/user.model.js';
@@ -65,7 +66,12 @@ export async function getMyProgress(userId: string) {
   };
 }
 
-export async function upsertProgress(userId: string, problemId: string, status: ProgressStatus) {
+export async function upsertProgress(
+  userId: string,
+  problemId: string,
+  status: ProgressStatus,
+  timeZone: string,
+) {
   const problem = await ProblemModel.findById(problemId).lean();
   if (!problem) {
     throw new ApiError(404, 'NOT_FOUND', 'Problem not found');
@@ -107,6 +113,11 @@ export async function upsertProgress(userId: string, problemId: string, status: 
     },
   );
 
+  let revisions: { created: number } | undefined;
+  if (status === ProgressStatusEnum.revisit) {
+    revisions = await scheduleRevisions(userId, problemId, problem.title, timeZone);
+  }
+
   return {
     progress: {
       id: progress._id.toString(),
@@ -122,6 +133,7 @@ export async function upsertProgress(userId: string, problemId: string, status: 
       chapterId: problem.chapterId.toString(),
       at: at.toISOString(),
     },
+    revisions,
   };
 }
 

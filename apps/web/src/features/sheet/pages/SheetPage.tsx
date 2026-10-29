@@ -4,7 +4,7 @@ import { Button } from '../../../components/ui/Button';
 import { Spinner } from '../../../components/ui/Spinner';
 import { NotFoundPage } from '../../auth/pages/NotFoundPage';
 import { useAuthStore } from '../../auth/store';
-import { useMyProgress, useToggleProgress } from '../../progress/hooks';
+import { useMarkRevisit, useMyProgress, useToggleProgress } from '../../progress/hooks';
 import type { SheetChapter } from '../api';
 import { ChapterAccordion } from '../components/ChapterAccordion';
 import { SheetFilters, type DifficultyFilter } from '../components/SheetFilters';
@@ -82,6 +82,7 @@ export function SheetPage() {
   const [progressError, setProgressError] = useState<string | null>(null);
 
   const toggleProgress = useToggleProgress((message) => setProgressError(message));
+  const markRevisit = useMarkRevisit((message) => setProgressError(message));
 
   // Reset manual accordion overrides when the deep-link slug changes.
   if (chapterSlug !== trackedSlug) {
@@ -192,6 +193,11 @@ export function SheetPage() {
     toggleProgress.mutate({ problemId, done });
   }
 
+  function handleMarkRevisit(problemId: string) {
+    setProgressError(null);
+    markRevisit.mutate(problemId);
+  }
+
   return (
     <section className="space-y-4">
       <header className="space-y-2">
@@ -239,6 +245,7 @@ export function SheetPage() {
               showCheckboxes={Boolean(user)}
               completedIds={completedIds}
               onToggleDone={handleToggleDone}
+              onMarkRevisit={handleMarkRevisit}
             />
           ))}
         </div>

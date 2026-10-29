@@ -21,3 +21,14 @@ export const ProgressStatus = {
 export type ProgressStatus = (typeof ProgressStatus)[keyof typeof ProgressStatus];
 
 export const DEFAULT_TIMEZONE = 'Asia/Kolkata';
+
+export const PlanStatus = {
+  planned: 'planned',
+  done: 'done',
+  missed: 'missed',
+} as const;
+
+export type PlanStatus = (typeof PlanStatus)[keyof typeof PlanStatus];
+
+/** Spaced-repetition offsets (days from local today) when marking revisit. */
+export const REVISIT_OFFSETS_DAYS = [1, 3, 7] as const;

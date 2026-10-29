@@ -8,6 +8,7 @@ type ChapterAccordionProps = {
   showCheckboxes?: boolean;
   completedIds?: Set<string>;
   onToggleDone?: (problemId: string, done: boolean) => void;
+  onMarkRevisit?: (problemId: string) => void;
   checkboxDisabled?: boolean;
 };
 
@@ -18,6 +19,7 @@ export function ChapterAccordion({
   showCheckboxes = false,
   completedIds,
   onToggleDone,
+  onMarkRevisit,
   checkboxDisabled = false,
 }: ChapterAccordionProps) {
   const panelId = `chapter-panel-${chapter.slug}`;
@@ -63,6 +65,7 @@ export function ChapterAccordion({
                     onToggleDone={
                       onToggleDone ? (done) => onToggleDone(problem.id, done) : undefined
                     }
+                    onMarkRevisit={onMarkRevisit ? () => onMarkRevisit(problem.id) : undefined}
                   />
                 ))}
               </ul>

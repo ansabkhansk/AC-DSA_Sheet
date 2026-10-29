@@ -4,6 +4,7 @@ import { LoginPage } from '../features/auth/pages/LoginPage';
 import { NotFoundPage } from '../features/auth/pages/NotFoundPage';
 import { RegisterPage } from '../features/auth/pages/RegisterPage';
 import { UnauthorizedPage } from '../features/auth/pages/UnauthorizedPage';
+import { CalendarPage } from '../features/calendar/pages/CalendarPage';
 import { DashboardPage } from '../features/dashboard/pages/DashboardPage';
 import { SheetPage } from '../features/sheet/pages/SheetPage';
 import { useAuthStore } from '../features/auth/store';
@@ -52,6 +53,14 @@ export function AppRouter() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calendar"
+            element={
+              <ProtectedRoute>
+                <CalendarPage />
               </ProtectedRoute>
             }
           />

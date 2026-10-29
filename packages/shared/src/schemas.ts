@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Difficulty, ProgressStatus, UserRole } from './constants.js';
+import { Difficulty, PlanStatus, ProgressStatus, UserRole } from './constants.js';
 
 export const difficultySchema = z.enum(Difficulty);
 
@@ -108,3 +108,86 @@ export const lastActivitySchema = z.object({
   problemSlug: z.string().optional(),
   at: z.string(),
 });
+
+export const dateKeySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD');
+
+export const planStatusSchema = z.enum(PlanStatus);
+
+function inclusiveDaySpan(from: string, to: string): number {
+  const start = Date.parse(`${from}T00:00:00.000Z`);
+  const end = Date.parse(`${to}T00:00:00.000Z`);
+  return Math.round((end - start) / 86_400_000) + 1;
+}
+
+export const listPlansQuerySchema = z
+  .object({
+    from: dateKeySchema,
+    to: dateKeySchema,
+  })
+  .superRefine((value, ctx) => {
+    if (value.from > value.to) {
+      ctx.addIssue({
+        code: 'custom',
+        message: '`from` must be on or before `to`',
+        path: ['from'],
+      });
+      return;
+    }
+    if (inclusiveDaySpan(value.from, value.to) > 62) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Date range cannot exceed 62 days',
+        path: ['to'],
+      });
+    }
+  });
+
+export const createPlanBodySchema = z.object({
+  date: dateKeySchema,
+  title: z.string().trim().min(1, 'Title is required').max(200),
+  problemIds: z.array(objectIdSchema).max(50).default([]),
+  topicId: objectIdSchema.optional(),
+  note: z.string().trim().max(2000).optional(),
+  status: planStatusSchema.optional(),
+});
+
+export const updatePlanBodySchema = z
+  .object({
+    date: dateKeySchema.optional(),
+    title: z.string().trim().min(1).max(200).optional(),
+    problemIds: z.array(objectIdSchema).max(50).optional(),
+    topicId: objectIdSchema.nullable().optional(),
+    note: z.string().trim().max(2000).nullable().optional(),
+    status: planStatusSchema.optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: 'At least one field is required',
+  });
+
+export const planIdParamsSchema = z.object({
+  id: objectIdSchema,
+});
+
+export const generatePlansBodySchema = z
+  .object({
+    startDate: dateKeySchema,
+    endDate: dateKeySchema,
+    perDay: z.number().int().min(1).max(20),
+  })
+  .superRefine((value, ctx) => {
+    if (value.startDate > value.endDate) {
+      ctx.addIssue({
+        code: 'custom',
+        message: '`startDate` must be on or before `endDate`',
+        path: ['startDate'],
+      });
+      return;
+    }
+    if (inclusiveDaySpan(value.startDate, value.endDate) > 365) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Date range cannot exceed 365 days',
+        path: ['endDate'],
+      });
+    }
+  });

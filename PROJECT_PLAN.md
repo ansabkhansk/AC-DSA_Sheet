@@ -22,7 +22,7 @@ todos:
     status: completed
   - id: p7-calendar
     content: "Calendar page: plans CRUD, month/week view, revisit scheduling, auto-plan generator, heatmap"
-    status: pending
+    status: completed
   - id: p8-hardening
     content: Redis caching, rate limiting, index verification, Vitest/Supertest tests, k6 load test
     status: pending
@@ -1122,4 +1122,24 @@ Template:
   - Deviations from the plan, and which clarification each one follows:
     - C5/C8/C7/C11 as above
     - Vitest/Supertest + `mongodb-memory-server` introduced in P6 for progress coverage (P8 still owns broader suite expansion)
-    - Out of scope honored: no calendar / revisit scheduling (P7)
+    - Out of scope honored at the time: no calendar / revisit scheduling (added in P7)
+
+- **P7**, verified on `2026-10-30`
+  - Commands and results:
+    - `npm run lint` / `typecheck` / `build -w @dsa/web` → exit 0
+    - `npm run test -w @dsa/api` → 19 passed (prior progress tests + calendar CRUD, range validation, isolation, derived status, revisit +1/+3/+7 idempotency, generate idempotency, IST/UTC date helpers and month boundary)
+    - `npm run test -w @dsa/web` → 4 passed
+    - Live smoke: create plan `2026-11-01` → list → revisit creates 3 → generate creates plans → anon plans `401`
+  - Manual checks and results:
+    - `StudyPlan` model with `{userId,date}` index; dates stored as UTC midnight of `YYYY-MM-DD` (C7)
+    - Plan status derived on read (C9): all problems completed → `done`; past incomplete → `missed`
+    - `PUT progress` with `revisit` schedules revision plans; repeats create 0 more; untick leaves plans (C8)
+    - `/calendar` protected route with FullCalendar v6 (MIT dayGrid/timeGrid/interaction), month/week toggle, day-click create dialog, event edit/delete without full reload
+    - Heatmap on calendar uses `GET /progress/stats` activity (C11), themed via CSS variables
+    - Nav includes Calendar for signed-in users; sheet has "Mark revisit"
+  - BLOCKED or UNVERIFIED items, with the reason:
+    - Interactive GUI month/week click-through was not captured in Computer Use; API + unit coverage and live smoke verified scheduling/CRUD/date rules.
+  - Deviations from the plan, and which clarification each one follows:
+    - Calendar library choice: **FullCalendar v6** MIT plugins (`daygrid`, `timegrid`, `interaction`) — record ADR in P10
+    - C7/C8/C9/C11 as above
+    - Out of scope honored: no drag-and-drop between dates; no notifications
