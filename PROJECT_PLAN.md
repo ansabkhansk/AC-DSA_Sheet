@@ -7,10 +7,10 @@ todos:
     status: completed
   - id: p2-api-core
     content: "API core: env config, db/redis, logger, error handler, validate middleware, health route"
-    status: pending
+    status: completed
   - id: p3-auth
     content: Auth module (register/login/refresh/logout/me, httpOnly cookies, refresh rotation) + web login/register pages
-    status: pending
+    status: completed
   - id: p4-sheet-data
     content: Chapter/Topic/Problem models with indexes + seed script with real DSA content
     status: pending
@@ -1006,3 +1006,55 @@ Template:
   - Deviations from the plan, and which clarification each one follows:
     - None of C1–C14 apply to P1. Local compose stays Mongo+Redis only (C1 default).
     - API placeholder uses Node's built-in `http` so the process stays up for the runtime import check; Express and `/health` wait for P2.
+
+- **P2**, verified on `2026-10-30`
+  - Commands and results:
+    - `npm run typecheck` → exit 0
+    - `npm run lint` → exit 0
+    - `npx prettier --check .` → exit 0
+    - `npm run build` → exit 0
+    - Invalid env (`JWT_ACCESS_SECRET=short`) → exits 1 before listen; log names `JWT_ACCESS_SECRET`
+    - Mongo stopped at startup → logs connection failure, exits 1, never listens
+    - Redis stopped at startup → warns `Redis unavailable; continuing in degraded mode`, still listens; `/health` → `redis:"down"`
+    - `REDIS_ENABLED=false` → logs `Redis disabled`; `/health` → `redis:"disabled"`
+    - `/health` with Mongo+Redis up → `200 {success:true,data:{status:"ok",mongo:"up",redis:"up"}}`
+    - Mongo stopped while API running → `/health` → `503` with `mongo:"down"`
+    - Unknown route → `404 NOT_FOUND`
+    - `POST /api/v1/_test/validate` with `{}` → `400 VALIDATION_ERROR` with field details
+    - `GET /api/v1/_test/error` → `500 INTERNAL_ERROR` generic message, no stack in body
+    - `curl -I /health` → Helmet headers present (`Content-Security-Policy`, `X-Content-Type-Options`, etc.)
+    - Request logs include `requestId`, method, url, `statusCode`, `responseTime`
+    - Graceful shutdown: closes HTTP, Mongo, Redis, exits 0 with `Shutdown complete`
+  - Manual checks and results:
+    - `.env` gitignored; `.env.example` lists all P2 variables (placeholders only, no real secrets)
+  - BLOCKED or UNVERIFIED items, with the reason:
+    - None. On Windows, an external `process.kill(pid, 'SIGTERM')` terminates Node unconditionally without running handlers; shutdown was verified by emitting `SIGTERM` in-process via non-production `POST /api/v1/_test/shutdown`.
+  - Deviations from the plan, and which clarification each one follows:
+    - C3: Redis optional/degraded mode implemented as specified.
+    - Non-production `_test` routes exist only to verify validation, unexpected errors, and shutdown; not used in production.
+
+- **P3**, verified on `2026-10-30`
+  - Commands and results:
+    - `npm run typecheck` / `lint` / `build` → exit 0
+    - Register → `201`, sets `access_token` (Path=/; Max-Age=900; HttpOnly; SameSite=Lax) and `refresh_token` (Path=/api/v1/auth; Max-Age=604800; HttpOnly; SameSite=Lax)
+    - Email stored lowercase; `passwordHash` starts with `$2b$10$`; plain password not returned
+    - Duplicate email any case → `409 CONFLICT`
+    - Wrong password and unknown email → same `401 Invalid email or password`
+    - `GET /auth/me` authenticated → `200` user without `passwordHash`; anonymous/tampered → `401`
+    - Refresh rotation → `200` new cookies; replay old refresh → `401`
+    - Logout deletes refresh record; later refresh with old token → `401`
+    - `/_test/protected` → `401` anon / `200` auth; `/_test/admin` as student → `403`
+    - Indexes: unique `users.email`; unique `refreshtokens.tokenHash`; TTL `expiresAt`
+    - Refresh tokens stored as 64-char SHA-256 hex only
+    - Vite `/login` serves theme boot script; ThemeToggle has `aria-pressed` and accessible name; login fields use labels; `/api` proxy returns auth `401` JSON
+  - Manual checks and results:
+    - Theme default is light (C14); choice persisted in `localStorage` key `theme`
+    - Concurrent 401 refresh coalescing and R5 single retry verified by code in `apps/web/src/lib/http.ts` (shared `refreshPromise`)
+  - BLOCKED or UNVERIFIED items, with the reason:
+    - Browser Network-tab confirmation of a single in-flight refresh under concurrent 401s was not captured in a GUI session; implementation matches the plan
+    - Live `COOKIE_SECURE=true` Set-Cookie inspection was not re-run on a restarted server; `setAuthCookies` uses `env.COOKIE_SECURE` and env parsing for `true` was verified
+  - Deviations from the plan, and which clarification each one follows:
+    - C4: opaque refresh token, SHA-256 stored, access JWT only
+    - C14: light default; no automatic system-theme following
+    - R7: `bcryptjs` used instead of native `bcrypt`
+    - Non-production `_test/protected` and `_test/admin` routes verify auth middleware acceptance criteria

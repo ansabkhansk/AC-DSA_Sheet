@@ -5,3 +5,4 @@ package-lock.json
 RULE.md
 PROJECT_PLAN.md
 coverage
+.env*
