@@ -1,0 +1,117 @@
+{
+  "generatedAt": "2026-10-29T22:16:03.816Z",
+  "results": [
+    {
+      "name": "progress_by_user_problem",
+      "collection": "userprogresses",
+      "query": {
+        "userId": "6ae3c5a3db7e9d7914bb8dbc",
+        "problemId": "6ae3c5a3db7e9d7914bb8dc4"
+      },
+      "winningPlanStage": "FETCH",
+      "indexName": "userId_1_problemId_1",
+      "stageChain": [
+        "FETCH",
+        "IXSCAN"
+      ],
+      "docsExamined": 1,
+      "keysExamined": 1,
+      "hasCollScan": false,
+      "hasIxScan": true
+    },
+    {
+      "name": "progress_by_user_chapter",
+      "collection": "userprogresses",
+      "query": {
+        "userId": "6ae3c5a3db7e9d7914bb8dbc",
+        "chapterId": "6ae3c5a3db7e9d7914bb8dbf"
+      },
+      "winningPlanStage": "FETCH",
+      "indexName": "userId_1_chapterId_1",
+      "stageChain": [
+        "FETCH",
+        "IXSCAN"
+      ],
+      "docsExamined": 1,
+      "keysExamined": 1,
+      "hasCollScan": false,
+      "hasIxScan": true
+    },
+    {
+      "name": "progress_by_user_completedAt",
+      "collection": "userprogresses",
+      "query": {
+        "userId": "6ae3c5a3db7e9d7914bb8dbc",
+        "completedAt": {
+          "$gte": "2026-11-01T00:00:00.000Z"
+        }
+      },
+      "winningPlanStage": "FETCH",
+      "indexName": "userId_1_completedAt_1",
+      "stageChain": [
+        "FETCH",
+        "IXSCAN"
+      ],
+      "docsExamined": 0,
+      "keysExamined": 0,
+      "hasCollScan": false,
+      "hasIxScan": true
+    },
+    {
+      "name": "plans_by_user_date_range",
+      "collection": "studyplans",
+      "query": {
+        "userId": "6ae3c5a3db7e9d7914bb8dbc",
+        "date": {
+          "$gte": "2026-11-01T00:00:00.000Z",
+          "$lte": "2026-11-30T00:00:00.000Z"
+        }
+      },
+      "winningPlanStage": "FETCH",
+      "indexName": "userId_1_date_1",
+      "stageChain": [
+        "FETCH",
+        "IXSCAN"
+      ],
+      "docsExamined": 1,
+      "keysExamined": 1,
+      "hasCollScan": false,
+      "hasIxScan": true
+    },
+    {
+      "name": "topics_by_chapter_order",
+      "collection": "topics",
+      "query": {
+        "chapterId": "6ae3c5a3db7e9d7914bb8dbf"
+      },
+      "winningPlanStage": "FETCH",
+      "indexName": "chapterId_1_order_1",
+      "stageChain": [
+        "FETCH",
+        "IXSCAN"
+      ],
+      "docsExamined": 1,
+      "keysExamined": 1,
+      "hasCollScan": false,
+      "hasIxScan": true
+    },
+    {
+      "name": "problems_by_topic_order",
+      "collection": "problems",
+      "query": {
+        "topicId": "6ae3c5a3db7e9d7914bb8dc2"
+      },
+      "winningPlanStage": "FETCH",
+      "indexName": "topicId_1_order_1",
+      "stageChain": [
+        "FETCH",
+        "IXSCAN"
+      ],
+      "docsExamined": 1,
+      "keysExamined": 1,
+      "hasCollScan": false,
+      "hasIxScan": true
+    }
+  ],
+  "ok": true
+}

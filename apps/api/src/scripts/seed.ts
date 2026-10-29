@@ -3,10 +3,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sheetSeedSchema, type SheetSeed } from '@dsa/shared';
 import { connectDb, disconnectDb } from '../config/db.js';
+import { connectRedis, disconnectRedis } from '../config/redis.js';
 import { logger } from '../config/logger.js';
 import { ChapterModel } from '../modules/sheet/chapter.model.js';
 import { ProblemModel } from '../modules/sheet/problem.model.js';
 import { TopicModel } from '../modules/sheet/topic.model.js';
+import { invalidateSheetCache } from '../utils/cache.js';
 
 function resolveSeedPath(): string {
   const here = path.dirname(fileURLToPath(import.meta.url));
@@ -125,9 +127,12 @@ async function seedSheet(seed: SheetSeed): Promise<void> {
 async function main(): Promise<void> {
   const seed = loadSeed();
   await connectDb();
+  await connectRedis();
   try {
     await seedSheet(seed);
+    await invalidateSheetCache();
   } finally {
+    await disconnectRedis();
     await disconnectDb();
   }
 }

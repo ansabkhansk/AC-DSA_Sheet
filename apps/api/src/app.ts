@@ -13,6 +13,7 @@ import { getLiveRedisStatus } from './config/redis.js';
 import { requireAuth, requireRole } from './middlewares/auth.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFound } from './middlewares/notFound.js';
+import { createRateLimiter } from './middlewares/rateLimit.js';
 import { validate } from './middlewares/validate.js';
 import { authRouter } from './modules/auth/auth.routes.js';
 import { plansRouter } from './modules/calendar/calendar.routes.js';
@@ -23,6 +24,10 @@ import { asyncHandler } from './utils/asyncHandler.js';
 export function createApp() {
   const app = express();
 
+  // One hop (CloudFront → Nginx → API, or local Vite proxy). Required so
+  // rate limiting sees the real client IP from X-Forwarded-For.
+  app.set('trust proxy', 1);
+
   app.use(helmet());
   app.use(
     cors({
@@ -32,6 +37,17 @@ export function createApp() {
   );
   app.use(express.json());
   app.use(cookieParser());
+
+  const apiRateLimit = createRateLimiter({
+    windowMs: env.RATE_LIMIT_WINDOW_MS,
+    max: env.RATE_LIMIT_API_MAX,
+    prefix: 'api',
+  });
+  const authRateLimit = createRateLimiter({
+    windowMs: env.RATE_LIMIT_WINDOW_MS,
+    max: env.RATE_LIMIT_AUTH_MAX,
+    prefix: 'auth',
+  });
 
   app.use(
     pinoHttp({
@@ -76,11 +92,12 @@ export function createApp() {
     }),
   );
 
-  app.use('/api/v1/auth', authRouter);
-  app.use('/api/v1/sheet', sheetRouter);
-  app.use('/api/v1/problems', problemsRouter);
-  app.use('/api/v1/progress', progressRouter);
-  app.use('/api/v1/plans', plansRouter);
+  // Auth uses a stricter limiter; other API routes share a looser one (documented in .env.example).
+  app.use('/api/v1/auth', authRateLimit, authRouter);
+  app.use('/api/v1/sheet', apiRateLimit, sheetRouter);
+  app.use('/api/v1/problems', apiRateLimit, problemsRouter);
+  app.use('/api/v1/progress', apiRateLimit, progressRouter);
+  app.use('/api/v1/plans', apiRateLimit, plansRouter);
 
   // Temporary routes used to verify P2/P3 acceptance criteria.
   if (env.NODE_ENV !== 'production') {

@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "seed": "tsx src/scripts/seed.ts",
     "check-seed-links": "tsx src/scripts/check-seed-links.ts",
+    "verify-indexes": "tsx src/scripts/verify-indexes.ts",
     "test": "vitest run"
   },
   "dependencies": {

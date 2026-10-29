@@ -18,7 +18,10 @@
     "format": "prettier --write .",
     "seed": "npm run seed -w @dsa/api",
     "check-seed-links": "npm run check-seed-links -w @dsa/api",
-    "test": "npm run test --workspaces --if-present"
+    "verify-indexes": "npm run verify-indexes -w @dsa/api",
+    "test": "npm run test --workspaces --if-present",
+    "test:api": "npm run test -w @dsa/api",
+    "load:k6": "k6 run infra/k6/load.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

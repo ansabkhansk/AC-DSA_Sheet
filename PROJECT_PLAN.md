@@ -25,7 +25,7 @@ todos:
     status: completed
   - id: p8-hardening
     content: Redis caching, rate limiting, index verification, Vitest/Supertest tests, k6 load test
-    status: pending
+    status: completed
   - id: p9-deploy
     content: Dockerize, deploy to AWS (EC2 + S3/CloudFront + Atlas), GitHub Actions CI/CD
     status: pending
@@ -905,6 +905,12 @@ Responsibilities are split across three files. `RULE.md` covers how code is writ
 - Do not claim that the system supports a specific load unless
   testing provides evidence.
 
+**P8 local evidence (see `docs/load-test-results.md` and `docs/LOAD_TESTING.md`):**
+- Assumed peak design rate (~500 rps) is **not** verified.
+- Host `k6.exe v2.3.0` (2 VUs / 20s / 1s sleep → `localhost:4000`): ~7.5 req/s, **0% errors**, p95 **32.71ms**.
+- A hotter 5 VU run / 320-request burst hit `RATE_LIMIT_API_MAX=300` and returned `429` + `Retry-After` — rate limiting works; raise limits before stressing further.
+- Multi-instance local API processes were **not** required for P8 verification: Redis holds shared `rl:*` counters; two replicas are a P9/C2 deploy concern.
+
 ---
 
 ## 14. Clarifications and risks
@@ -1143,3 +1149,28 @@ Template:
     - Calendar library choice: **FullCalendar v6** MIT plugins (`daygrid`, `timegrid`, `interaction`) — record ADR in P10
     - C7/C8/C9/C11 as above
     - Out of scope honored: no drag-and-drop between dates; no notifications
+
+- **P8**, verified on `2026-10-30`
+  - Commands and results:
+    - `npm run test -w @dsa/api` → **27 passed** (auth, progress, plans, timezone, sheet cache headers, rate-limit 429/Retry-After/trust-proxy, error shape)
+    - `npm run lint` / `typecheck` / `build -w @dsa/api` → exit 0
+    - `npm run verify-indexes` → all listed queries **IXSCAN**, no COLLSCAN; output `docs/index-explain.json`
+    - Live Redis cache: first `GET /sheet` `X-Cache: MISS`, second `HIT`; `If-None-Match` → `304`; `Cache-Control: public, max-age=300`
+    - `npm run seed` logs `Sheet cache invalidated`; next sheet read is `MISS` then `HIT`
+    - k6:
+      - Host `k6.exe v2.3.0` Run C (2 VUs / 20s / sleep 1): **0% failures**, p95 **32.71ms**, checks 100%, exit 0
+      - Docker Run B (same profile earlier): 0% failures, p95 45.94ms
+      - Docker Run A (5 VUs / 0.3s sleep): **73% failures** — bottleneck = `RATE_LIMIT_API_MAX`
+      - Host burst 320× `GET /sheet`: 299× `200` (all `X-Cache: HIT`) then `429` with `Retry-After`
+    - Cache during load: Redis key `cache:sheet:tree:v1` present through k6; post-seed invalidation then `MISS`→`HIT` after rate-limit window reset
+  - Manual checks and results:
+    - `app.set('trust proxy', 1)`; auth limiter stricter than API (`30` vs `300` / 60s, documented in `.env.example`)
+    - Redis down / `REDIS_ENABLED=false`: sheet still `200` from Mongo; rate limit uses in-memory store (C3)
+    - Private progress/plans never cached in Redis (sheet tree only)
+    - `/health` with compose up: `mongo:"up"`, `redis:"up"`
+  - BLOCKED or UNVERIFIED items, with the reason:
+    - Two concurrent local API Node processes were not started. Not required for current single-process local stack: Redis-backed `rl:*` keys provide cross-instance sharing for P9’s two-replica topology (C2). Multi-VU k6 + Redis already exercised the shared counter path.
+    - Host CPU/RSS not sampled during the 20s smoke beyond k6 latency/error metrics.
+  - Deviations from the plan, and which clarification each one follows:
+    - C2/C3/C5 as above
+    - Out of scope honored: no deployment (P9)

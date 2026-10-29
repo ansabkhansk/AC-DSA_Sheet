@@ -32,6 +32,14 @@ const envSchema = z.object({
   COOKIE_SECURE: envBoolean(false),
   CORS_ORIGIN: z.string().min(1, 'CORS_ORIGIN is required'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+  /** Sliding window length for rate limits (ms). Default 60s. */
+  RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
+  /** Max requests per window for general `/api/v1/*` routes. Auth is stricter. */
+  RATE_LIMIT_API_MAX: z.coerce.number().int().positive().default(300),
+  /** Max requests per window for `/api/v1/auth/*` (stricter than API). */
+  RATE_LIMIT_AUTH_MAX: z.coerce.number().int().positive().default(30),
+  /** Redis TTL for the sheet tree cache (seconds). Default 1 hour. */
+  SHEET_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(3600),
 });
 
 const parsed = envSchema.safeParse(process.env);
