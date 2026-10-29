@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Difficulty, UserRole } from './constants.js';
+import { Difficulty, ProgressStatus, UserRole } from './constants.js';
 
 export const difficultySchema = z.enum(Difficulty);
 
@@ -86,4 +86,25 @@ export const problemsQuerySchema = z.object({
     .string()
     .regex(/^[a-fA-F0-9]{24}$/, 'topic must be a valid ObjectId')
     .optional(),
+});
+
+export const objectIdSchema = z.string().regex(/^[a-fA-F0-9]{24}$/, 'Must be a valid ObjectId');
+
+export const progressStatusSchema = z.enum(ProgressStatus);
+
+export const progressParamsSchema = z.object({
+  problemId: objectIdSchema,
+});
+
+export const upsertProgressBodySchema = z.object({
+  status: progressStatusSchema,
+});
+
+export const lastActivitySchema = z.object({
+  problemId: z.string(),
+  topicId: z.string(),
+  chapterId: z.string(),
+  chapterSlug: z.string().optional(),
+  problemSlug: z.string().optional(),
+  at: z.string(),
 });

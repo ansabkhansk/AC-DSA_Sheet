@@ -12,3 +12,12 @@ export const UserRole = {
 } as const;
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+
+export const ProgressStatus = {
+  done: 'done',
+  revisit: 'revisit',
+} as const;
+
+export type ProgressStatus = (typeof ProgressStatus)[keyof typeof ProgressStatus];
+
+export const DEFAULT_TIMEZONE = 'Asia/Kolkata';

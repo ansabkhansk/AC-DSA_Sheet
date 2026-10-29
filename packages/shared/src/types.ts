@@ -1,11 +1,14 @@
 import type { z } from 'zod';
 import type {
   difficultySchema,
+  lastActivitySchema,
   loginSchema,
   problemResourcesSchema,
+  progressStatusSchema,
   publicUserSchema,
   registerSchema,
   sheetSeedSchema,
+  upsertProgressBodySchema,
 } from './schemas.js';
 
 export type DifficultyValue = z.infer<typeof difficultySchema>;
@@ -14,3 +17,6 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type PublicUser = z.infer<typeof publicUserSchema>;
 export type ProblemResources = z.infer<typeof problemResourcesSchema>;
 export type SheetSeed = z.infer<typeof sheetSeedSchema>;
+export type ProgressStatusValue = z.infer<typeof progressStatusSchema>;
+export type UpsertProgressInput = z.infer<typeof upsertProgressBodySchema>;
+export type LastActivity = z.infer<typeof lastActivitySchema>;

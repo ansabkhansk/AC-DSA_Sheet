@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { Button } from '../../../components/ui/Button';
 import { Spinner } from '../../../components/ui/Spinner';
 import { NotFoundPage } from '../../auth/pages/NotFoundPage';
 import { useAuthStore } from '../../auth/store';
+import { useMyProgress, useToggleProgress } from '../../progress/hooks';
 import type { SheetChapter } from '../api';
 import { ChapterAccordion } from '../components/ChapterAccordion';
 import { SheetFilters, type DifficultyFilter } from '../components/SheetFilters';
@@ -46,6 +47,17 @@ function defaultOpenSlugs(chapters: SheetChapter[], chapterSlug?: string): Set<s
   return new Set();
 }
 
+function findChapterSlugForProblem(chapters: SheetChapter[], problemId: string): string | null {
+  for (const chapter of chapters) {
+    for (const topic of chapter.topics) {
+      if (topic.problems.some((problem) => problem.id === problemId)) {
+        return chapter.slug;
+      }
+    }
+  }
+  return null;
+}
+
 function SheetSkeleton() {
   return (
     <div className="space-y-3" aria-hidden="true">
@@ -58,13 +70,18 @@ function SheetSkeleton() {
 
 export function SheetPage() {
   const { chapterSlug } = useParams();
+  const location = useLocation();
   const user = useAuthStore((state) => state.user);
   const { data, isLoading, isError, refetch, isFetching } = useSheet();
+  const progressQuery = useMyProgress();
 
   const [search, setSearch] = useState('');
   const [difficulty, setDifficulty] = useState<DifficultyFilter>('All');
   const [openOverride, setOpenOverride] = useState<Set<string> | null>(null);
   const [trackedSlug, setTrackedSlug] = useState(chapterSlug);
+  const [progressError, setProgressError] = useState<string | null>(null);
+
+  const toggleProgress = useToggleProgress((message) => setProgressError(message));
 
   // Reset manual accordion overrides when the deep-link slug changes.
   if (chapterSlug !== trackedSlug) {
@@ -81,8 +98,43 @@ export function SheetPage() {
     return filterSheet(data, search, difficulty);
   }, [data, search, difficulty]);
 
-  const openSlugs =
-    openOverride ?? (data ? defaultOpenSlugs(data, chapterSlug) : new Set<string>());
+  const hashProblemId = location.hash.startsWith('#problem-')
+    ? location.hash.slice('#problem-'.length)
+    : null;
+
+  const openSlugs = useMemo(() => {
+    if (openOverride) {
+      return openOverride;
+    }
+    if (!data) {
+      return new Set<string>();
+    }
+    if (hashProblemId) {
+      const slug = findChapterSlugForProblem(data, hashProblemId);
+      if (slug) {
+        return new Set([slug]);
+      }
+    }
+    return defaultOpenSlugs(data, chapterSlug);
+  }, [openOverride, data, chapterSlug, hashProblemId]);
+
+  useEffect(() => {
+    if (!hashProblemId || !data) {
+      return;
+    }
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById(`problem-${hashProblemId}`)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [hashProblemId, data, openSlugs]);
+
+  const completedIds = useMemo(
+    () => new Set(progressQuery.data?.completedProblemIds ?? []),
+    [progressQuery.data?.completedProblemIds],
+  );
 
   if (isLoading) {
     return (
@@ -135,6 +187,11 @@ export function SheetPage() {
     setDifficulty('All');
   }
 
+  function handleToggleDone(problemId: string, done: boolean) {
+    setProgressError(null);
+    toggleProgress.mutate({ problemId, done });
+  }
+
   return (
     <section className="space-y-4">
       <header className="space-y-2">
@@ -145,6 +202,15 @@ export function SheetPage() {
       </header>
 
       {!user ? <SignInPrompt /> : null}
+
+      {progressError ? (
+        <div
+          className="rounded-lg border border-danger bg-surface px-4 py-3 text-sm text-danger"
+          role="alert"
+        >
+          {progressError}
+        </div>
+      ) : null}
 
       <SheetFilters
         search={search}
@@ -170,6 +236,9 @@ export function SheetPage() {
               chapter={chapter}
               open={openSlugs.has(chapter.slug)}
               onToggle={() => toggleChapter(chapter.slug)}
+              showCheckboxes={Boolean(user)}
+              completedIds={completedIds}
+              onToggleDone={handleToggleDone}
             />
           ))}
         </div>

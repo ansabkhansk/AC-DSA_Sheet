@@ -19,7 +19,7 @@ todos:
     status: completed
   - id: p6-progress
     content: "Progress: upsert API, optimistic checkbox, lastActivity resume, stats dashboard"
-    status: pending
+    status: completed
   - id: p7-calendar
     content: "Calendar page: plans CRUD, month/week view, revisit scheduling, auto-plan generator, heatmap"
     status: pending
@@ -1105,3 +1105,21 @@ Template:
     - C6: `/sheet` and `/sheet/:chapterSlug` routes implemented
     - C14: light default retained; dark via toggle with `localStorage` persistence
     - Out of scope honored: no progress checkboxes or counts (P6)
+
+- **P6**, verified on `2026-10-30`
+  - Commands and results:
+    - `npm run lint` / `typecheck` / `build` → exit 0
+    - `npm run test -w @dsa/api` → 10 passed (auth 401s, validation 400, unknown problem 404, parallel idempotent PUT, DELETE idempotent, two-user isolation, hand-counted stats fixture, timezone streak helpers)
+    - `npm run test -w @dsa/web` → 4 passed (optimistic add/remove/revert/rapid last-intent)
+    - Live smoke against `localhost:4000`: register → `PUT` done → same `completedAt` on repeat → `GET /progress/me` → `GET /progress/stats` (streak/chapterSlug) → anon `401` → `DELETE` `200`
+  - Manual checks and results:
+    - `UserProgress` unique `{userId,problemId}`; `$setOnInsert.completedAt`; `users.lastActivity` updated on PUT
+    - Sheet checkboxes for logged-in users only; optimistic toggle with revert + non-technical error banner
+    - Dashboard: loading/error/retry, empty "Start the sheet", stats by difficulty/chapter, Continue → `/sheet/:chapterSlug#problem-:id` with scroll
+    - Streak/activity day boundaries use `X-Timezone` with `Asia/Kolkata` fallback (C7); `revisit` counts as solved (C8); stats include sparse `activity` (C11)
+  - BLOCKED or UNVERIFIED items, with the reason:
+    - Interactive DevTools offline toggle and multi-viewport GUI clicks were not captured (Computer Use sidecar unavailable earlier). Failure recovery covered by unit tests + `onError` revert path; offline behavior matches the same axios rejection path.
+  - Deviations from the plan, and which clarification each one follows:
+    - C5/C8/C7/C11 as above
+    - Vitest/Supertest + `mongodb-memory-server` introduced in P6 for progress coverage (P8 still owns broader suite expansion)
+    - Out of scope honored: no calendar / revisit scheduling (P7)

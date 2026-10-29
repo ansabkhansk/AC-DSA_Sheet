@@ -15,6 +15,7 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import { notFound } from './middlewares/notFound.js';
 import { validate } from './middlewares/validate.js';
 import { authRouter } from './modules/auth/auth.routes.js';
+import { progressRouter } from './modules/progress/progress.routes.js';
 import { problemsRouter, sheetRouter } from './modules/sheet/sheet.routes.js';
 import { asyncHandler } from './utils/asyncHandler.js';
 
@@ -77,6 +78,7 @@ export function createApp() {
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1/sheet', sheetRouter);
   app.use('/api/v1/problems', problemsRouter);
+  app.use('/api/v1/progress', progressRouter);
 
   // Temporary routes used to verify P2/P3 acceptance criteria.
   if (env.NODE_ENV !== 'production') {

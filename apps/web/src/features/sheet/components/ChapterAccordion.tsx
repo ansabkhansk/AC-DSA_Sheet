@@ -5,9 +5,21 @@ type ChapterAccordionProps = {
   chapter: SheetChapter;
   open: boolean;
   onToggle: () => void;
+  showCheckboxes?: boolean;
+  completedIds?: Set<string>;
+  onToggleDone?: (problemId: string, done: boolean) => void;
+  checkboxDisabled?: boolean;
 };
 
-export function ChapterAccordion({ chapter, open, onToggle }: ChapterAccordionProps) {
+export function ChapterAccordion({
+  chapter,
+  open,
+  onToggle,
+  showCheckboxes = false,
+  completedIds,
+  onToggleDone,
+  checkboxDisabled = false,
+}: ChapterAccordionProps) {
   const panelId = `chapter-panel-${chapter.slug}`;
   const buttonId = `chapter-button-${chapter.slug}`;
   const problemCount = chapter.topics.reduce((total, topic) => total + topic.problems.length, 0);
@@ -42,7 +54,16 @@ export function ChapterAccordion({ chapter, open, onToggle }: ChapterAccordionPr
               </h3>
               <ul className="m-0 list-none p-0">
                 {topic.problems.map((problem) => (
-                  <ProblemRow key={problem.id} problem={problem} />
+                  <ProblemRow
+                    key={problem.id}
+                    problem={problem}
+                    showCheckbox={showCheckboxes}
+                    completed={completedIds?.has(problem.id) ?? false}
+                    checkboxDisabled={checkboxDisabled}
+                    onToggleDone={
+                      onToggleDone ? (done) => onToggleDone(problem.id, done) : undefined
+                    }
+                  />
                 ))}
               </ul>
             </div>
