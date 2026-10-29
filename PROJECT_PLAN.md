@@ -16,7 +16,7 @@ todos:
     status: completed
   - id: p5-sheet-ui
     content: "Sheet UI: chapter accordion, topics, problem rows with resource links, difficulty badges, filters"
-    status: pending
+    status: completed
   - id: p6-progress
     content: "Progress: upsert API, optimistic checkbox, lastActivity resume, stats dashboard"
     status: pending
@@ -1079,3 +1079,29 @@ Template:
     - C5: sheet/problems endpoints are public (no auth)
     - C6: `topic` query filter is a topic ObjectId
     - Article links use chapter-level Wikipedia DSA pages (stable https) alongside real LeetCode/Codeforces problem URLs
+
+- **P5**, verified on `2026-10-30`
+  - Commands and results:
+    - `npm run lint` → exit 0 (SheetPage accordion open state derived without `setState` in `useEffect`)
+    - `npm run typecheck` → exit 0
+    - `npm run build -w @dsa/web` → exit 0
+    - `npx prettier --check` on P5-touched web files → exit 0
+    - `GET /api/v1/sheet` → `200`, 10 chapters / 113 problems; Vite `/api` proxy → same payload
+    - Client filter simulation (AND of title search + difficulty): Easy → 24; `sum`+Easy → `Two Sum` only; nonsense query → empty
+    - `http://localhost:5173/sheet`, `/sheet/arrays`, `/sheet/not-a-real-chapter` → SPA `200` (unknown slug rendered as in-app 404)
+  - Manual checks and results:
+    - Hierarchy: `ChapterAccordion` → topics → `ProblemRow`; order comes from seeded API `order` sort
+    - Difficulty badges render text labels with dedicated light/dark CSS vars (`--color-easy-*` / medium / hard)
+    - Resource links use `target="_blank"` + `rel="noopener noreferrer"`; missing youtube/leetcode/codeforces/article omitted
+    - Filters: labeled search + difficulty select; empty state + Clear filters; loading spinner/skeleton; error + Retry
+    - Deep link: `/sheet/:chapterSlug` opens that chapter by default; unknown slug → `NotFoundPage`
+    - Logged-out: public `/sheet` (auth `/me` 401 no longer forces login redirect); `SignInPrompt` → `/login?from=…` (LoginPage honors `from`)
+    - Theme: light default + persistent `ThemeToggle`; global `:focus-visible` outline for keyboard use
+    - Responsive layout: stacked filters/problem rows on small screens (`flex-col` / `flex-wrap`), `max-w-5xl` shell
+  - BLOCKED or UNVERIFIED items, with the reason:
+    - Live GUI viewport sweep at 375 / 768 / 1280 px and interactive accordion clicks were not captured; Cursor Computer Use sidecar was unavailable (`sidecar_unavailable` / CDN 403). Layout and a11y attributes verified in code against the acceptance criteria.
+  - Deviations from the plan, and which clarification each one follows:
+    - C5: anonymous sheet browse works; sign-in prompt does not block reading
+    - C6: `/sheet` and `/sheet/:chapterSlug` routes implemented
+    - C14: light default retained; dark via toggle with `localStorage` persistence
+    - Out of scope honored: no progress checkboxes or counts (P6)

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '../../../components/ui/Button';
 import { Spinner } from '../../../components/ui/Spinner';
@@ -36,6 +36,16 @@ function filterSheet(
     .filter((chapter) => chapter.topics.length > 0);
 }
 
+function defaultOpenSlugs(chapters: SheetChapter[], chapterSlug?: string): Set<string> {
+  if (chapterSlug && chapters.some((chapter) => chapter.slug === chapterSlug)) {
+    return new Set([chapterSlug]);
+  }
+  if (chapters[0]) {
+    return new Set([chapters[0].slug]);
+  }
+  return new Set();
+}
+
 function SheetSkeleton() {
   return (
     <div className="space-y-3" aria-hidden="true">
@@ -53,8 +63,14 @@ export function SheetPage() {
 
   const [search, setSearch] = useState('');
   const [difficulty, setDifficulty] = useState<DifficultyFilter>('All');
-  const [openSlugs, setOpenSlugs] = useState<Set<string>>(new Set());
-  const [initializedOpen, setInitializedOpen] = useState(false);
+  const [openOverride, setOpenOverride] = useState<Set<string> | null>(null);
+  const [trackedSlug, setTrackedSlug] = useState(chapterSlug);
+
+  // Reset manual accordion overrides when the deep-link slug changes.
+  if (chapterSlug !== trackedSlug) {
+    setTrackedSlug(chapterSlug);
+    setOpenOverride(null);
+  }
 
   const hasActiveFilters = search.trim().length > 0 || difficulty !== 'All';
 
@@ -65,22 +81,8 @@ export function SheetPage() {
     return filterSheet(data, search, difficulty);
   }, [data, search, difficulty]);
 
-  useEffect(() => {
-    if (!data || initializedOpen) {
-      return;
-    }
-
-    if (chapterSlug) {
-      const exists = data.some((chapter) => chapter.slug === chapterSlug);
-      if (exists) {
-        setOpenSlugs(new Set([chapterSlug]));
-      }
-    } else if (data[0]) {
-      setOpenSlugs(new Set([data[0].slug]));
-    }
-
-    setInitializedOpen(true);
-  }, [data, chapterSlug, initializedOpen]);
+  const openSlugs =
+    openOverride ?? (data ? defaultOpenSlugs(data, chapterSlug) : new Set<string>());
 
   if (isLoading) {
     return (
@@ -116,8 +118,9 @@ export function SheetPage() {
   }
 
   function toggleChapter(slug: string) {
-    setOpenSlugs((current) => {
-      const next = new Set(current);
+    setOpenOverride((current) => {
+      const base = current ?? defaultOpenSlugs(data ?? [], chapterSlug);
+      const next = new Set(base);
       if (next.has(slug)) {
         next.delete(slug);
       } else {
