@@ -134,3 +134,12 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Editor / agent local files
+.cursor/
+
+# Private local notes (not for reviewers / GitHub)
+temp/
+temp.md
+
+

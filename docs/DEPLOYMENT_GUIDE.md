@@ -2,7 +2,7 @@
 
 One way to ship this app on AWS with a **public HTTPS link**.
 
-**Short reference:** [`DEPLOYMENT.md`](./DEPLOYMENT.md) · Plan: `PROJECT_PLAN.md` §9
+**Short reference:** [`DEPLOYMENT.md`](./DEPLOYMENT.md)
 
 ---
 

@@ -117,15 +117,14 @@ Production template: [`.env.production.example`](.env.production.example). Never
 | [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) | Step-by-step AWS deploy |
 | [docs/LOAD_TESTING.md](docs/LOAD_TESTING.md) / [load-test-results.md](docs/load-test-results.md) | k6 method + P8 numbers |
 | [docs/adr/](docs/adr/) | Architecture Decision Records |
-| [docs/VIDEO_SCRIPT.md](docs/VIDEO_SCRIPT.md) | 2–5 min demo script (recording link BLOCKED until provided) |
 
-## PDF deliverables
+## Deliverables
 
 1. Source code — this repository  
-2. Live AWS link — https://d3o8eouup6tfum.cloudfront.net  
+2. Live app — https://d3o8eouup6tfum.cloudfront.net  
 3. System design — [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md)  
 4. DB schema — [docs/DB_SCHEMA.md](docs/DB_SCHEMA.md)  
-5. Video — script in [docs/VIDEO_SCRIPT.md](docs/VIDEO_SCRIPT.md); **recording link: BLOCKED**
+5. Demo video — share the recording link separately (2–5 minutes)
 
 ## License
 

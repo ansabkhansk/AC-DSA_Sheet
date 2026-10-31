@@ -1,4 +1,4 @@
-# Deployment reference (P9)
+# Deployment reference
 
 **Full guide:** [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md)
 
@@ -11,7 +11,6 @@
 | **EC2** | `i-0ca98acd2039b0b2a` |
 | **Deployed image** | `ghcr.io/ansabkhansk/dsa-sheet-api:9488ac986f198d4b4fb91d34a73a1e9a34b5d9a9` |
 | **Budget** | `dsa-sheet-budget` (Active, alert configured) |
-| **P9 status** | **Completed** (`2026-10-31`, owner-revised acceptance scope) |
 
 ## Architecture
 

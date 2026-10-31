@@ -1,7 +1,7 @@
 /**
  * CloudFront Function (viewer-request) for the default S3 origin behaviour only.
  * Rewrites SPA deep links to /index.html so /calendar and /sheet/* reload correctly.
- * Do NOT attach this to the /api/* behaviour (risk R1 in PROJECT_PLAN.md).
+ * Do NOT attach this to the /api/* behaviour (would turn API 404/403 into HTML).
  *
  * Create in AWS Console → CloudFront → Functions, then associate with the
  * Default (*) behaviour (viewer-request). Publishing creates a chargeable

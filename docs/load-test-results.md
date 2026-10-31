@@ -91,7 +91,7 @@ Confirms the documented API limit and that cached sheet responses still carry ra
 
 ## Multi-instance note
 
-Production demo topology (P9 / C2) uses **two API containers behind Nginx** sharing Redis rate-limit keys. For this local P8 verification, a **single** API process is sufficient: rate-limit counters are stored in Redis (`rl:*`), so sharing is architectural rather than requiring two local Node processes. Starting a second local API instance was not required for the current single-process `npm run dev` setup.
+Production demo topology uses **two API containers behind Nginx** sharing Redis rate-limit keys. For this local verification, a **single** API process is sufficient: rate-limit counters are stored in Redis (`rl:*`), so sharing is architectural rather than requiring two local Node processes.
 
 ---
 

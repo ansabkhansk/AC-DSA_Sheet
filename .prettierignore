@@ -2,7 +2,6 @@ dist
 node_modules
 package-lock.json
 .cursor
-RULE.md
-PROJECT_PLAN.md
+temp/
 coverage
 .env*
