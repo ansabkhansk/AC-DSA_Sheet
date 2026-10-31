@@ -319,12 +319,17 @@ Inbound **TCP 80** = that list only. Remove temporary open access.
 
 Workflow: `.github/workflows/deploy.yml`.
 
-1. IAM OIDC provider: `https://token.actions.githubusercontent.com`, audience `sts.amazonaws.com`.
-2. Deploy role trust: `repo:ORG/REPO:environment:production`.
-3. Allow that role: S3 sync to web bucket, CloudFront invalidate, SSM SendCommand on the instance.
-4. GitHub Environment `production`.
-5. **Secret** `AWS_DEPLOY_ROLE_ARN`.
-6. **Variables:**
+Role ARN is **not** a secret. The workflow assumes this role by default:
+
+`arn:aws:iam::522711051979:role/dsa-sheet-github-deploy`
+
+(Optional override: repo variable `AWS_DEPLOY_ROLE_ARN`. Do **not** put a mistyped ARN in Actions secrets — that caused `AssumeRoleWithWebIdentity` denials.)
+
+1. IAM OIDC provider: `token.actions.githubusercontent.com`, audience `sts.amazonaws.com` (already required).
+2. Role **Trust relationships** → paste `infra/iam/github-deploy-trust.json` (Edit trust policy → replace JSON → Update).
+3. Role **Permissions** → Create inline policy → paste `infra/iam/github-deploy-permissions.json` after replacing `REPLACE_WITH_*` with your bucket, CloudFront distribution id, and instance id.
+4. GitHub Environment named exactly `production` (Settings → Environments).
+5. **Variables** (repo or `production` environment):
 
 | Variable | Example |
 | --- | --- |
@@ -335,8 +340,9 @@ Workflow: `.github/workflows/deploy.yml`.
 | `EC2_APP_DIR` | `/opt/dsa-sheet` (optional) |
 | `APP_URL` | `https://xxxx.cloudfront.net` |
 | `DEPLOY_AWS_ENABLED` | leave empty at first |
+| `AWS_DEPLOY_ROLE_ARN` | optional; only if role ARN differs |
 
-**Done:** Actions can assume the role.
+**Done:** Deploy job prints OIDC `sub`, then assumes the role.
 
 ---
 
@@ -420,7 +426,7 @@ curl -fsS http://127.0.0.1/health
 
 | Problem | Fix |
 | --- | --- |
-| OIDC fails | Trust `sub` matches `environment: production`; check role ARN secret |
+| OIDC fails | Trust JSON from `infra/iam/github-deploy-trust.json`; workflow must assume `…/role/dsa-sheet-github-deploy` (not a secret). Job log “Print OIDC token claims” shows real `sub`. Role also needs permissions from `infra/iam/github-deploy-permissions.json` or later steps fail. |
 | SSM deploy fails | Instance Online; instance profile has SSM; correct instance ID |
 | API 502 on CloudFront | Origin = **current** public DNS; SG allows CF; APIs healthy on box |
 | Atlas timeout | Allowlist current public IP; update after Stop/Start |

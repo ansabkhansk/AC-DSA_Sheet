@@ -87,6 +87,10 @@ jobs:
     timeout-minutes: 30
     if: ${{ vars.DEPLOY_AWS_ENABLED == 'true' || (github.event_name == 'workflow_dispatch' && inputs.deploy_aws) }}
     environment: production
+    # Job-level token permission required for OIDC assume-role.
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout
@@ -104,11 +108,48 @@ jobs:
           npm run build -w @dsa/shared
           npm run build -w @dsa/web
 
+      # Role ARNs are not secrets. A mistyped/newline-padded secret was causing
+      # sts:AssumeRoleWithWebIdentity denials even with a correct IAM trust policy.
+      # Override with repo variable AWS_DEPLOY_ROLE_ARN only if the role name changes.
+      - name: Resolve deploy role ARN
+        id: aws_role
+        run: |
+          set -euo pipefail
+          ROLE_ARN="${{ vars.AWS_DEPLOY_ROLE_ARN }}"
+          if [ -z "${ROLE_ARN}" ]; then
+            ROLE_ARN="arn:aws:iam::522711051979:role/dsa-sheet-github-deploy"
+          fi
+          # Strip accidental whitespace/newlines from the GitHub variable.
+          ROLE_ARN="$(printf '%s' "${ROLE_ARN}" | tr -d '\r\n' | xargs)"
+          echo "role_arn=${ROLE_ARN}" >> "${GITHUB_OUTPUT}"
+          echo "Assuming role: ${ROLE_ARN}"
+          echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY}"
+          echo "Expected OIDC sub: repo:${GITHUB_REPOSITORY}:environment:production"
+
+      - name: Print OIDC token claims
+        run: |
+          set -euo pipefail
+          RESP="$(curl -sS -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com")"
+          JWT="$(echo "${RESP}" | jq -r .value)"
+          if [ -z "${JWT}" ] || [ "${JWT}" = "null" ]; then
+            echo "Failed to fetch GitHub OIDC token. Check workflow permissions.id-token: write."
+            echo "${RESP}"
+            exit 1
+          fi
+          PAYLOAD="$(echo "${JWT}" | cut -d. -f2 | tr '_-' '/+')"
+          PAD=$(( (4 - ${#PAYLOAD} % 4) % 4 ))
+          if [ "${PAD}" -gt 0 ]; then
+            PAYLOAD="${PAYLOAD}$(printf '%*s' "${PAD}" '' | tr ' ' '=')"
+          fi
+          echo "${PAYLOAD}" | base64 -d 2>/dev/null | jq '{sub, aud, iss, repository, actor, ref}'
+
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ steps.aws_role.outputs.role_arn }}
           aws-region: ${{ vars.AWS_REGION }}
+          audience: sts.amazonaws.com
 
       - name: Sync SPA to S3
         env:
