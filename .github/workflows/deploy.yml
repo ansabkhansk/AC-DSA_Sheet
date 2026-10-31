@@ -124,7 +124,7 @@ jobs:
           echo "role_arn=${ROLE_ARN}" >> "${GITHUB_OUTPUT}"
           echo "Assuming role: ${ROLE_ARN}"
           echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY}"
-          echo "Expected OIDC sub: repo:${GITHUB_REPOSITORY}:environment:production"
+          echo "Trust policy must match the Print OIDC token claims sub exactly (may include @ownerId/@repoId)."
 
       - name: Print OIDC token claims
         run: |
@@ -181,13 +181,15 @@ jobs:
         run: |
           set -euo pipefail
           APP_DIR="${APP_DIR:-/opt/dsa-sheet}"
+          # AWS-RunShellScript invokes /bin/sh (dash on Ubuntu). dash does not
+          # support `set -o pipefail`, so keep remote options dash-safe.
           PARAMS=$(jq -nc \
             --arg img "$IMAGE" \
             --arg tag "$IMAGE_TAG" \
             --arg dir "$APP_DIR" \
             '{
               commands: [
-                "set -euo pipefail",
+                "set -eu",
                 ("cd " + $dir),
                 ("export GHCR_IMAGE=" + $img),
                 ("export IMAGE_TAG=" + $tag),
@@ -207,16 +209,26 @@ jobs:
             --query 'Command.CommandId' \
             --output text)
           echo "SSM CommandId=${COMMAND_ID}"
+          # Waiter exits non-zero on Failed — still fetch logs before failing the job.
+          set +e
           aws ssm wait command-executed --command-id "${COMMAND_ID}" --instance-id "${INSTANCE_ID}"
+          WAIT_RC=$?
+          set -e
           STATUS=$(aws ssm get-command-invocation \
             --command-id "${COMMAND_ID}" \
             --instance-id "${INSTANCE_ID}" \
             --query 'Status' --output text)
-          echo "SSM Status=${STATUS}"
+          echo "SSM Status=${STATUS} (waiter_rc=${WAIT_RC})"
+          echo "===== SSM StandardOutputContent ====="
           aws ssm get-command-invocation \
             --command-id "${COMMAND_ID}" \
             --instance-id "${INSTANCE_ID}" \
-            --query '[StandardOutputContent,StandardErrorContent]' --output text
+            --query 'StandardOutputContent' --output text
+          echo "===== SSM StandardErrorContent ====="
+          aws ssm get-command-invocation \
+            --command-id "${COMMAND_ID}" \
+            --instance-id "${INSTANCE_ID}" \
+            --query 'StandardErrorContent' --output text
           test "${STATUS}" = "Success"
 
       - name: Smoke test (CloudFront)

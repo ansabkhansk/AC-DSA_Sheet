@@ -327,6 +327,7 @@ Role ARN is **not** a secret. The workflow assumes this role by default:
 
 1. IAM OIDC provider: `token.actions.githubusercontent.com`, audience `sts.amazonaws.com` (already required).
 2. Role **Trust relationships** → paste `infra/iam/github-deploy-trust.json` (Edit trust policy → replace JSON → Update).
+   This repo’s GitHub OIDC `sub` includes owner/repo numeric IDs (not the classic `repo:owner/name:…` form). The trust file matches the real claim from Actions. If assume still fails, re-check the job’s **Print OIDC token claims** step and copy that `sub` into the trust policy exactly.
 3. Role **Permissions** → Create inline policy → paste `infra/iam/github-deploy-permissions.json` after replacing `REPLACE_WITH_*` with your bucket, CloudFront distribution id, and instance id.
 4. GitHub Environment named exactly `production` (Settings → Environments).
 5. **Variables** (repo or `production` environment):
