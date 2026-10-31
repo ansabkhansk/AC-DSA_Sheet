@@ -2,49 +2,50 @@
 
 **Full guide:** [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md)
 
-## What you deploy (one architecture)
+## Live deployment
+
+| Item | Value |
+| --- | --- |
+| **Public URL** | https://d3o8eouup6tfum.cloudfront.net |
+| **CloudFront ID** | `E2IN0MM5VIJBJX` |
+| **EC2** | `i-0ca98acd2039b0b2a` |
+| **Deployed image** | `ghcr.io/ansabkhansk/dsa-sheet-api:9488ac986f198d4b4fb91d34a73a1e9a34b5d9a9` |
+| **Budget** | `dsa-sheet-budget` (Active, alert configured) |
+| **P9 status** | **Completed** (`2026-10-31`, owner-revised acceptance scope) |
+
+## Architecture
 
 | Piece | Role |
 | --- | --- |
-| **Public URL** | `https://xxxx.cloudfront.net` (free HTTPS, no custom domain) |
+| **Public URL** | `https://….cloudfront.net` |
 | **Website** | S3 + CloudFront + SPA Function (`infra/cloudfront-spa-rewrite.js`) |
 | **API** | CloudFront `/api*` → EC2 `:80` → `infra/nginx.conf` → api1/api2 |
 | **Compose** | `infra/docker-compose.prod.yml` |
 | **DB** | MongoDB Atlas M0 |
 | **Secrets** | SSM `/dsa-sheet/*` → `/etc/dsa-sheet/api.env` |
-| **CI/CD** | `ci.yml` + `deploy.yml` (GHCR always; AWS gated via OIDC) |
+| **CI/CD** | `ci.yml` + `deploy.yml` (OIDC) |
 
-**Constraint used here: no Elastic IP.** Use the instance public IP (Atlas) and public DNS (CloudFront origin). After **Stop/Start**, update both. Prefer **Reboot**.
+**No Elastic IP** in this deploy: use instance public IP (Atlas) and public DNS (CloudFront origin). After Stop/Start, update both. Prefer Reboot.
 
-`infra/nginx.conf` does **not** serve the SPA (`/` is JSON 404). The UI is only on CloudFront/S3.
-
-Auth cookies need HTTPS + `COOKIE_SECURE=true` + `CORS_ORIGIN=https://xxxx.cloudfront.net` (same origin via CloudFront).
-
-## Cost (verify for your account)
-
-| Resource | Notes |
-| --- | --- |
-| EC2 micro | May bill after free tier/credits |
-| Public IPv4 (no EIP) | Still billed while the instance is running; no separate EIP |
-| Atlas M0 | Typically free |
-| Redis on Docker | Free on the host |
-| S3 / CloudFront | Usually cheap/free at demo traffic |
-| Domain | Not required |
-| ALB / NAT / ElastiCache | Avoid |
+`infra/nginx.conf` does **not** serve the SPA. UI is only on CloudFront/S3.
 
 ## Workflows
 
 | Workflow | Role |
 | --- | --- |
 | `ci.yml` | Lint / test / build / Docker assert |
-| `deploy.yml` | GHCR + gated AWS (S3 / CloudFront / SSM) |
-
-Do not enable `DEPLOY_AWS_ENABLED` without a Budget alert.
+| `deploy.yml` | GHCR + gated AWS deploy; `image_tag` input supports rollback |
 
 ## Secrets
 
-Never commit `.env`, `infra/certs/*`, or real `api.env`. Prefer SSM for production.
+Never commit `.env` or real `api.env`. Prefer SSM for production. GitHub Actions uses OIDC (no long-lived AWS access keys in the workflow).
 
-## Leftover EC2+domain files
+## Teardown checklist
 
-Ignore unless CloudFront is unavailable: `infra/docker-compose.ec2.yml`, `infra/nginx.ec2.conf`, `deploy-ec2-path-a.yml`. See guide appendix.
+1. Disable `DEPLOY_AWS_ENABLED`; cancel in-flight deploys.  
+2. Empty + delete SPA S3 bucket; disable then delete CloudFront distribution.  
+3. Terminate EC2; delete unused volumes.  
+4. Delete SSM parameters under `/dsa-sheet/`.  
+5. Remove optional CloudWatch alarms/log groups if created.  
+6. Pause/delete Atlas if unused.  
+7. Confirm Budget shows no unexpected spend.

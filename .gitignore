@@ -79,12 +79,6 @@ web_modules/
 !.env.production.example
 infra/.env.prod.verify
 
-# PATH A EC2 host artifacts (never commit builds or TLS keys)
-infra/web-dist/**
-!infra/web-dist/.gitkeep
-infra/certs/**
-!infra/certs/.gitkeep
-
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache

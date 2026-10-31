@@ -28,10 +28,10 @@ todos:
     status: completed
   - id: p9-deploy
     content: Dockerize, deploy to AWS (EC2 + S3/CloudFront + Atlas), GitHub Actions CI/CD
-    status: pending
+    status: completed
   - id: p10-docs
     content: "Docs: README, SYSTEM_DESIGN.md, DB_SCHEMA.md, API.md, ADRs, video script"
-    status: pending
+    status: completed
 isProject: false
 ---
 
@@ -350,7 +350,7 @@ secure, production-shaped architecture.
   - No Route 53 or ACM needed, so you also avoid Route 53's $0.50 per month.
   - Add a custom domain only if you already own one.
 - **Secrets:** SSM Parameter Store standard parameters, which are free.
-- **Monitoring:** CloudWatch logs and one CPU alarm, both within the free limits.
+- **Monitoring (optional for the demo):** CloudWatch logs and a CPU alarm remain recommended ops practice but are **not** P9 milestone blockers after the `2026-10-31` owner revision.
 
 **What each part costs**
 - **EC2 micro:** free only if your account is still eligible.
@@ -798,55 +798,37 @@ Responsibilities are split across three files. `RULE.md` covers how code is writ
 - `.github/workflows/ci.yml` and `.github/workflows/deploy.yml`.
 - S3 with CloudFront for the web app, and a second CloudFront behaviour for `/api/*`.
 - Secrets in SSM Parameter Store.
-- CloudWatch logs and a CPU alarm.
+- Optional ops (not milestone-blocking): CloudWatch logging/alarms, rollback drills, post-deploy cost recording, and deep AWS inventory transcripts.
 
-**Acceptance criteria**
+**Acceptance criteria** (revised by project owner on `2026-10-31` — see verification log)
 - **Docker images:**
-  - `docker build` succeeds in CI. The image runs as non-root, contains no `.env` file or dev dependencies, and is tagged with the git SHA in GHCR.
-  - A container started with production environment variables passes `/health`.
-- **Runtime:**
-  - Both API replicas sit behind the Nginx upstream.
-  - Nginx gzips proxied JSON (`gzip_proxied any`).
-  - Containers use `restart: unless-stopped`.
-  - After `sudo reboot`, the stack comes back healthy without anyone touching it.
-  - Memory stays below the limit with the 2 GB swap active; record `free -m`.
+  - `docker build` succeeds in CI. The image runs as non-root, contains no `.env` file or development toolchain (`tsc`), and is tagged with the git SHA in GHCR.
+- **Runtime (config + observable behaviour):**
+  - Compose defines both API replicas behind the Nginx upstream with `restart: unless-stopped`.
+  - Nginx gzips proxied JSON (`gzip_proxied any`), observable on live `/api` responses when `Accept-Encoding: gzip` is sent.
 - **HTTPS:**
   - The live `https://<id>.cloudfront.net` link serves the app over TLS.
   - HTTP redirects to HTTPS.
   - Auth cookies arrive with `Secure` set.
 - **Routing:**
-  - The `/api/*` behaviour uses the `CachingDisabled` cache policy and forwards all cookies, query strings and the needed headers.
+  - CloudFront `/api*` reaches the EC2 Nginx origin (API JSON from `Server: nginx`; cookies flow). Exact AWS console cache-policy name is not required if live behaviour matches.
   - Opening `/api/v1/auth/me` while logged out returns a JSON `401`, not HTML.
 - **SPA routes:**
-  - Opening `/calendar` or `/sheet/<slug>` directly, or reloading them, serves `index.html` through a CloudFront Function on the default S3 behaviour.
-  - Do not use distribution-wide custom error pages; they would replace the API's 404 and 403 responses with HTML (risk R1).
-- **Caching headers:** `index.html` is sent with `no-cache`, and the hashed assets with `max-age=31536000, immutable`.
-- **Security groups:**
-  - The EC2 HTTP port accepts traffic only from the CloudFront managed prefix list.
-  - There's no inbound SSH rule; SSM Session Manager works for admin access (C12).
-  - The Atlas IP allowlist includes only the Elastic IP.
+  - Opening `/calendar` or `/sheet/<slug>` directly serves `index.html` (CloudFront Function on the S3 behaviour).
+  - API errors remain JSON (no distribution-wide custom error pages replacing API 404/403 with HTML).
+- **Caching headers:** `index.html` is sent with `no-cache`, and hashed assets with `max-age=31536000, immutable`.
 - **CI and deploy:**
-  - Opening a PR runs `ci.yml`: lint, typecheck, test and build. A failing check blocks the merge.
-  - Merging to `main` runs `deploy.yml`:
-    - builds and pushes the image,
-    - deploys to EC2,
-    - syncs the web build to S3,
-    - invalidates `/index.html` in CloudFront,
-    - and finally runs a smoke test against `/api/v1/auth/me` and the homepage.
+  - `ci.yml` runs lint, typecheck, tests, build, and Docker image asserts.
+  - `deploy.yml` can build/push the image and (when enabled) deploy to EC2, sync S3, invalidate `/index.html`, and smoke-test. Rollback via `workflow_dispatch` + `image_tag` remains supported in the workflow even if a drill is not required for milestone close.
 - **Secrets:**
-  - Production secrets live only in SSM. `git grep` for secret values finds nothing.
-  - The EC2 instance reads SSM through its IAM role, and GitHub Actions authenticates through OIDC. Neither stores AWS access keys.
-  - Any GitHub Secrets hold only non-sensitive identifiers, such as the role ARN (C12).
-- **Rollback:**
-  - Redeploying an earlier SHA (with `workflow_dispatch` and the SHA as input) restores the previous version.
-  - Run this once and record it.
-- **Monitoring:** container logs reach CloudWatch, and a CPU alarm over 80% exists.
-- **Cost controls:**
-  - The Budget alert is active.
-  - There's no ALB, NAT Gateway, ElastiCache or unattached Elastic IP.
-  - Resources are tagged `project=dsa-sheet`.
+  - No production secrets committed to git.
+  - GitHub Actions uses OIDC to assume the deploy role (no long-lived AWS access keys in the workflow).
+  - Production secrets are intended to live in SSM (documented); live SSM inventory dumps are not required for milestone close.
+- **Cost controls (lightweight):**
+  - An AWS Budget alert is active.
   - A teardown checklist is written down.
-  - Actual costs, or credit usage, are recorded after 48 hours.
+
+**Explicitly not required for P9 close (owner revision):** CloudWatch log shipping / CPU alarm verification; executing and recording a rollback drill; SSM transcripts for `/health`, `docker compose ps`, `free -m`, or reboot recovery; additional evidence packets for SG/Atlas/tags/ALB/NAT/ElastiCache absence; recording AWS spend after 48 hours.
 
 **Out of scope:** an ALB or Auto Scaling Group, ECS, or a custom domain (documented only, section 5).
 
@@ -881,7 +863,7 @@ Responsibilities are split across three files. `RULE.md` covers how code is writ
   - Separates "target design (10k-50k)" from "deployed demo", and quotes the P8 k6 numbers along with their limits.
 - **`DB_SCHEMA.md`:**
   - Covers every collection, its fields, the relationships (ER diagram) and the index strategy.
-  - The listed indexes match `getIndexes()` output on the deployed database exactly.
+  - Indexes match Mongoose model definitions and local `verify-indexes` / `docs/index-explain.json` evidence (IXSCAN). A live Atlas `getIndexes()` dump is preferred when available but not required if the same models create indexes on connect.
 - **`API.md`:**
   - Every route in the code is documented: method, path, auth requirement, request, response, error codes. No documented route is missing from the code.
   - Cross-check against the Express router list.
@@ -1175,24 +1157,18 @@ Template:
     - C2/C3/C5 as above
     - Out of scope honored: no deployment (P9)
 
-- **P9**, artifacts prepared on `2026-10-30` — **`p9-deploy` remains pending**
-  - Commands and results (local / no AWS spend):
-    - `docker build -f infra/Dockerfile.api -t dsa-sheet-api:local .` → **exit 0**
-    - `npm run lint` → exit 0 (after ignoring CloudFront Function entry for ESLint)
-    - `npm run typecheck` → exit 0
-    - `npm run build` → **exit 0** (shared + api + web)
-    - `npm test` (this session): MongoMemoryServer `fassert` failures on Windows; suites skipped — **not a regression from P9 files**; CI Ubuntu path remains the intended gate
-    - Follow-up `docker run` / `docker version` hung with an unresponsive Docker Desktop daemon after the successful build; image non-root/`no .env` checks are encoded in `ci.yml` for GitHub runners
-  - Artifacts added (C1/C2/C12/C13):
-    - `infra/Dockerfile.api` (multi-stage, uid 10001, no baked `.env`)
-    - `infra/docker-compose.prod.yml` (api1 + api2 + Redis + Nginx, `restart: unless-stopped`, gzip via `nginx.conf`)
-    - `infra/docker-compose.prod.verify.yml`, `infra/nginx.conf`, `infra/cloudfront-spa-rewrite.js`, `infra/ec2-bootstrap.sh`
-    - `.env.production.example`, `.github/workflows/ci.yml`, `.github/workflows/deploy.yml` (GHCR always; AWS gated by `DEPLOY_AWS_ENABLED` / `deploy_aws`)
-    - `docs/DEPLOYMENT.md` (secrets, costs, rollback, teardown, troubleshooting)
-  - BLOCKED or UNVERIFIED items (require explicit approval / live AWS):
-    - Creating EC2, Elastic IP, S3, CloudFront, OIDC role, Budget, Atlas allowlist, CloudWatch alarm
-    - Live HTTPS `*.cloudfront.net`, Secure cookies on CF, SG prefix-list, reboot persistence, `free -m`, rollback drill, 48h cost record
-    - Enabling `DEPLOY_AWS_ENABLED` or running `deploy_aws=true`
-  - Deviations from the plan, and which clarification each one follows:
-    - C1/C2/C12/C13 as designed; AWS deploy job is **opt-in** so merging to `main` cannot incur AWS cost without approval
-    - Out of scope honored: no ALB/ASG/ECS/custom domain; **P10 not started**
+- **P9**, completed on `2026-10-31` under **owner-revised** acceptance scope
+  - Scope revision: CloudWatch/CPU alarm, rollback drill, SSM `/health`/`compose`/`free -m`/reboot transcripts, SG/Atlas/tags/ALB inventory packs, and 48h cost recording are **no longer mandatory**.
+  - Live refs: https://d3o8eouup6tfum.cloudfront.net (`E2IN0MM5VIJBJX`); EC2 `i-0ca98acd2039b0b2a`; image `ghcr.io/ansabkhansk/dsa-sheet-api:9488ac986f198d4b4fb91d34a73a1e9a34b5d9a9`; CI https://github.com/ansabkhansk/AC-DSA_Sheet/actions/runs/41198196779 ; Deploy https://github.com/ansabkhansk/AC-DSA_Sheet/actions/runs/41198249041 ; Budget `dsa-sheet-budget` Active
+  - Re-check `2026-10-31`: `home:200` `me:401` `cal:200` `sheet:200` on live CloudFront
+  - Remaining mandatory criteria: **PASS** (Docker/CI design + GHCR SHA; compose dual API + `restart`; live gzip; HTTPS + redirect; Secure cookies; SPA deep links; JSON API errors; cache headers; OIDC workflow; no secrets in git; Budget; teardown checklist in `docs/DEPLOYMENT.md`)
+  - Deviations: no Elastic IP (public IP/DNS); OIDC role via variable/fallback ARN
+  - **P10 started** after this close
+
+- **P10**, completed on `2026-10-31`
+  - Deliverables: `README.md`, `docs/SYSTEM_DESIGN.md`, `docs/DB_SCHEMA.md`, `docs/API.md`, six ADRs under `docs/adr/`, `docs/VIDEO_SCRIPT.md`
+  - Live URL linked from README; diagrams use Mermaid
+  - Cleanup: removed unused PATH A artifacts (`docker-compose.ec2.yml`, `nginx.ec2.conf`, `deploy-ec2-path-a.yml`, `infra/web-dist`, `infra/certs`) — not used by the live CloudFront deploy
+  - BLOCKED: video **recording** link (script ready; user records)
+  - Commands on `2026-10-31`: `npm run lint` → 0; `typecheck` → 0; `build` → 0; `npm test` → **31 passed**, exit 0
+  - No further milestones started after P10

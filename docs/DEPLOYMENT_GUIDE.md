@@ -453,8 +453,6 @@ curl -fsS http://127.0.0.1/health
 
 ---
 
-## Appendix — old EC2+domain files (ignore for this deploy)
+## Appendix — alternate EC2+domain path
 
-Earlier we kept an alternate “all on one EC2 with a bought domain” option while CloudFront was blocked. **You do not need it now.**
-
-Leftover files (do not use unless CF is unavailable again): `infra/docker-compose.ec2.yml`, `infra/nginx.ec2.conf`, `.github/workflows/deploy-ec2-path-a.yml`, `infra/web-dist/`, `infra/certs/`.
+An earlier alternate (SPA on EC2 with a bought domain) was removed after CloudFront went live, to keep the repo reviewer-focused on the **S3 + CloudFront** architecture. Use this guide’s CloudFront path only.
