@@ -1,0 +1,46 @@
+# Multi-stage API image. Build from the monorepo root:
+#   docker build -f infra/Dockerfile.api -t dsa-sheet-api:local .
+#
+# Runs as non-root. Production deps only. No .env baked in.
+
+FROM node:20-alpine AS build
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+COPY packages/shared/package.json ./packages/shared/
+COPY apps/api/package.json ./apps/api/
+# Root workspaces also list apps/web; keep its package.json so npm workspaces resolve.
+COPY apps/web/package.json ./apps/web/
+RUN npm ci
+
+COPY tsconfig.base.json ./
+COPY packages/shared ./packages/shared
+COPY apps/api ./apps/api
+RUN npm run build -w @dsa/shared && npm run build -w @dsa/api
+
+FROM node:20-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=4000
+
+RUN addgroup -S app && adduser -S -G app -u 10001 appuser
+
+COPY package.json package-lock.json ./
+COPY packages/shared/package.json ./packages/shared/
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+RUN npm ci --omit=dev --workspace=@dsa/shared --workspace=@dsa/api --include-workspace-root \
+  && chown -R appuser:app /app
+
+COPY --from=build --chown=appuser:app /app/packages/shared/dist ./packages/shared/dist
+COPY --from=build --chown=appuser:app /app/apps/api/dist ./apps/api/dist
+# Seed JSON is available for ops scripts; not required for the API process itself.
+COPY --from=build --chown=appuser:app /app/apps/api/src/data ./apps/api/src/data
+
+USER appuser
+EXPOSE 4000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:4000/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+
+CMD ["node", "--max-old-space-size=256", "apps/api/dist/server.js"]

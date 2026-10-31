@@ -1174,3 +1174,25 @@ Template:
   - Deviations from the plan, and which clarification each one follows:
     - C2/C3/C5 as above
     - Out of scope honored: no deployment (P9)
+
+- **P9**, artifacts prepared on `2026-10-30` — **`p9-deploy` remains pending**
+  - Commands and results (local / no AWS spend):
+    - `docker build -f infra/Dockerfile.api -t dsa-sheet-api:local .` → **exit 0**
+    - `npm run lint` → exit 0 (after ignoring CloudFront Function entry for ESLint)
+    - `npm run typecheck` → exit 0
+    - `npm run build` → **exit 0** (shared + api + web)
+    - `npm test` (this session): MongoMemoryServer `fassert` failures on Windows; suites skipped — **not a regression from P9 files**; CI Ubuntu path remains the intended gate
+    - Follow-up `docker run` / `docker version` hung with an unresponsive Docker Desktop daemon after the successful build; image non-root/`no .env` checks are encoded in `ci.yml` for GitHub runners
+  - Artifacts added (C1/C2/C12/C13):
+    - `infra/Dockerfile.api` (multi-stage, uid 10001, no baked `.env`)
+    - `infra/docker-compose.prod.yml` (api1 + api2 + Redis + Nginx, `restart: unless-stopped`, gzip via `nginx.conf`)
+    - `infra/docker-compose.prod.verify.yml`, `infra/nginx.conf`, `infra/cloudfront-spa-rewrite.js`, `infra/ec2-bootstrap.sh`
+    - `.env.production.example`, `.github/workflows/ci.yml`, `.github/workflows/deploy.yml` (GHCR always; AWS gated by `DEPLOY_AWS_ENABLED` / `deploy_aws`)
+    - `docs/DEPLOYMENT.md` (secrets, costs, rollback, teardown, troubleshooting)
+  - BLOCKED or UNVERIFIED items (require explicit approval / live AWS):
+    - Creating EC2, Elastic IP, S3, CloudFront, OIDC role, Budget, Atlas allowlist, CloudWatch alarm
+    - Live HTTPS `*.cloudfront.net`, Secure cookies on CF, SG prefix-list, reboot persistence, `free -m`, rollback drill, 48h cost record
+    - Enabling `DEPLOY_AWS_ENABLED` or running `deploy_aws=true`
+  - Deviations from the plan, and which clarification each one follows:
+    - C1/C2/C12/C13 as designed; AWS deploy job is **opt-in** so merging to `main` cannot incur AWS cost without approval
+    - Out of scope honored: no ALB/ASG/ECS/custom domain; **P10 not started**

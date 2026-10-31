@@ -1,0 +1,16 @@
+# Local verification overlay. Does not touch AWS.
+# Usage (from repo root, after building the image and creating a local env file):
+#   docker build -f infra/Dockerfile.api -t dsa-sheet-api:local .
+#   copy .env.production.example → infra/.env.prod.verify (fill JWT + Atlas or local Mongo)
+#   docker compose -f infra/docker-compose.prod.yml -f infra/docker-compose.prod.verify.yml up -d
+#   curl http://127.0.0.1/health
+
+services:
+  api1:
+    image: dsa-sheet-api:local
+    env_file:
+      - ./.env.prod.verify
+  api2:
+    image: dsa-sheet-api:local
+    env_file:
+      - ./.env.prod.verify

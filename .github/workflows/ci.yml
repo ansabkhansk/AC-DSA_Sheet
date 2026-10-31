@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Production build (shared + api + web)
+        run: npm run build
+
+      - name: Docker build (API image)
+        run: docker build -f infra/Dockerfile.api -t dsa-sheet-api:ci-${{ github.sha }} .
+
+      - name: Assert image is non-root and secret-free
+        run: |
+          set -euo pipefail
+          USER_LINE="$(docker run --rm --entrypoint id dsa-sheet-api:ci-${{ github.sha }})"
+          echo "container user: ${USER_LINE}"
+          echo "${USER_LINE}" | grep -q 'uid=10001'
+          # No baked env files / no typescript toolchain in the runtime image.
+          docker run --rm --entrypoint sh dsa-sheet-api:ci-${{ github.sha }} -c \
+            '! test -f /app/.env && ! test -f /app/apps/api/.env && ! command -v tsc >/dev/null 2>&1'

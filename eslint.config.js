@@ -5,7 +5,15 @@ import globals from 'globals';
 import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/node_modules/**', 'infra/k6/**'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      'infra/k6/**',
+      // CloudFront Functions entrypoint; not executed by Node/ESLint tooling.
+      'infra/cloudfront-spa-rewrite.js',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

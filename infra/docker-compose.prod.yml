@@ -1,0 +1,115 @@
+# Production stack for EC2 (C1 / C2): two API replicas, Redis, Nginx.
+# MongoDB is Atlas (not in this file). Images are pulled from GHCR — never build on the micro.
+#
+# On the instance (after SSM Parameter Store → /etc/dsa-sheet/api.env):
+#   export IMAGE_TAG=<git-sha>
+#   docker compose -f infra/docker-compose.prod.yml --env-file /etc/dsa-sheet/api.env pull
+#   docker compose -f infra/docker-compose.prod.yml --env-file /etc/dsa-sheet/api.env up -d
+#
+# Do not run this against real AWS without explicit approval (costs / networking).
+
+name: dsa-sheet-prod
+
+services:
+  api1:
+    image: ${GHCR_IMAGE:-ghcr.io/OWNER/dsa-sheet-api}:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - ${API_ENV_FILE:-/etc/dsa-sheet/api.env}
+    environment:
+      PORT: 4000
+      REDIS_ENABLED: 'true'
+      REDIS_URL: redis://redis:6379
+      NODE_OPTIONS: '--max-old-space-size=256'
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4000/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
+    networks:
+      - internal
+
+  api2:
+    image: ${GHCR_IMAGE:-ghcr.io/OWNER/dsa-sheet-api}:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - ${API_ENV_FILE:-/etc/dsa-sheet/api.env}
+    environment:
+      PORT: 4000
+      REDIS_ENABLED: 'true'
+      REDIS_URL: redis://redis:6379
+      NODE_OPTIONS: '--max-old-space-size=256'
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:4000/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
+    networks:
+      - internal
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command:
+      [
+        'redis-server',
+        '--maxmemory',
+        '64mb',
+        '--maxmemory-policy',
+        'allkeys-lru',
+        '--save',
+        '',
+        '--appendonly',
+        'no',
+      ]
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      api1:
+        condition: service_healthy
+      api2:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1/health']
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge

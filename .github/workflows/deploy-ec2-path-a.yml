@@ -1,0 +1,109 @@
+name: Deploy EC2 PATH A (manual)
+
+# Optional helper for PATH A. Does NOT touch S3/CloudFront.
+# Default: build + push API image to GHCR only.
+# Set deploy_host=true only after you have configured SSH deploy secrets
+# (see docs/DEPLOYMENT_GUIDE.md). Manual EC2 steps remain the primary path.
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Image tag (empty = this commit SHA)'
+        required: false
+        type: string
+      deploy_host:
+        description: 'Also SSH to EC2 and restart docker compose.ec2.yml'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-ec2-path-a
+  cancel-in-progress: false
+
+env:
+  IMAGE_NAME: dsa-sheet-api
+
+jobs:
+  build-and-push:
+    name: Build and push API image
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+      image: ${{ steps.meta.outputs.image }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: meta
+        run: |
+          set -euo pipefail
+          TAG="${{ github.event.inputs.image_tag }}"
+          if [ -z "${TAG}" ]; then TAG="${GITHUB_SHA}"; fi
+          OWNER_LC="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+          echo "image=ghcr.io/${OWNER_LC}/${IMAGE_NAME}" >> "${GITHUB_OUTPUT}"
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/Dockerfile.api
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+            ${{ steps.meta.outputs.image }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build web dist (artifact for manual SCP)
+        run: |
+          npm ci
+          npm run build -w @dsa/shared
+          npm run build -w @dsa/web
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: apps/web/dist
+          retention-days: 7
+
+  deploy-host:
+    name: SSH restart compose (optional)
+    needs: [build-and-push]
+    if: ${{ github.event.inputs.deploy_host == true || github.event.inputs.deploy_host == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Restart PATH A stack over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          APP_DIR: ${{ vars.EC2_APP_DIR }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_SSH_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          envs: APP_DIR
+          script: |
+            set -euo pipefail
+            APP_DIR="${APP_DIR:-/opt/dsa-sheet}"
+            cd "${APP_DIR}"
+            export GHCR_IMAGE="${{ needs.build-and-push.outputs.image }}"
+            export IMAGE_TAG="${{ needs.build-and-push.outputs.image_tag }}"
+            export API_ENV_FILE=/etc/dsa-sheet/api.env
+            docker compose -f infra/docker-compose.ec2.yml pull
+            docker compose -f infra/docker-compose.ec2.yml up -d
+            curl -fsS http://127.0.0.1/health

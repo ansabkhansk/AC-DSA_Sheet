@@ -1,0 +1,190 @@
+name: Deploy
+
+# Builds and pushes the API image to GHCR on main.
+# AWS EC2 / S3 / CloudFront steps run only when explicitly enabled
+# (repository variable DEPLOY_AWS_ENABLED=true, or workflow_dispatch deploy_aws=true).
+# Do not enable AWS deploy without budget alerts and explicit approval — resources incur cost.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Image tag / git SHA to deploy (rollback). Empty = this commit.'
+        required: false
+        type: string
+      deploy_aws:
+        description: 'Run EC2 + S3 + CloudFront deploy (requires OIDC + GitHub vars)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+env:
+  IMAGE_NAME: dsa-sheet-api
+
+jobs:
+  build-and-push:
+    name: Build and push GHCR image
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+      image: ${{ steps.meta.outputs.image }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve image tag
+        id: meta
+        run: |
+          set -euo pipefail
+          TAG="${{ github.event.inputs.image_tag }}"
+          if [ -z "${TAG}" ]; then
+            TAG="${GITHUB_SHA}"
+          fi
+          OWNER_LC="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+          IMAGE="ghcr.io/${OWNER_LC}/${IMAGE_NAME}"
+          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+          echo "image=${IMAGE}" >> "${GITHUB_OUTPUT}"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/Dockerfile.api
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.tag }}
+            ${{ steps.meta.outputs.image }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-aws:
+    name: Deploy to AWS (gated)
+    needs: [build-and-push]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: ${{ vars.DEPLOY_AWS_ENABLED == 'true' || (github.event_name == 'workflow_dispatch' && inputs.deploy_aws) }}
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install and build web
+        run: |
+          npm ci
+          npm run build -w @dsa/shared
+          npm run build -w @dsa/web
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Sync SPA to S3
+        env:
+          S3_BUCKET: ${{ vars.S3_WEB_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws s3 sync apps/web/dist "s3://${S3_BUCKET}/" \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "index.html"
+          aws s3 cp apps/web/dist/index.html "s3://${S3_BUCKET}/index.html" \
+            --cache-control "no-cache" \
+            --content-type "text/html; charset=utf-8"
+
+      - name: Invalidate CloudFront index.html
+        env:
+          DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${DISTRIBUTION_ID}" \
+            --paths /index.html
+
+      - name: Deploy API on EC2 via SSM
+        env:
+          INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
+          IMAGE: ${{ needs.build-and-push.outputs.image }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+          APP_DIR: ${{ vars.EC2_APP_DIR }}
+        run: |
+          set -euo pipefail
+          APP_DIR="${APP_DIR:-/opt/dsa-sheet}"
+          PARAMS=$(jq -nc \
+            --arg img "$IMAGE" \
+            --arg tag "$IMAGE_TAG" \
+            --arg dir "$APP_DIR" \
+            '{
+              commands: [
+                "set -euo pipefail",
+                ("cd " + $dir),
+                ("export GHCR_IMAGE=" + $img),
+                ("export IMAGE_TAG=" + $tag),
+                "export API_ENV_FILE=/etc/dsa-sheet/api.env",
+                ("echo " + $tag + " > /etc/dsa-sheet/IMAGE_TAG"),
+                "docker compose -f infra/docker-compose.prod.yml pull",
+                "docker compose -f infra/docker-compose.prod.yml up -d",
+                "docker image prune -f",
+                "curl -fsS http://127.0.0.1/health"
+              ]
+            }')
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "${INSTANCE_ID}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "dsa-sheet deploy ${IMAGE_TAG}" \
+            --parameters "${PARAMS}" \
+            --query 'Command.CommandId' \
+            --output text)
+          echo "SSM CommandId=${COMMAND_ID}"
+          aws ssm wait command-executed --command-id "${COMMAND_ID}" --instance-id "${INSTANCE_ID}"
+          STATUS=$(aws ssm get-command-invocation \
+            --command-id "${COMMAND_ID}" \
+            --instance-id "${INSTANCE_ID}" \
+            --query 'Status' --output text)
+          echo "SSM Status=${STATUS}"
+          aws ssm get-command-invocation \
+            --command-id "${COMMAND_ID}" \
+            --instance-id "${INSTANCE_ID}" \
+            --query '[StandardOutputContent,StandardErrorContent]' --output text
+          test "${STATUS}" = "Success"
+
+      - name: Smoke test (CloudFront)
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+        run: |
+          set -euo pipefail
+          curl -fsS "${APP_URL}/" | head -c 200
+          CODE=$(curl -sS -o /tmp/me.json -w "%{http_code}" "${APP_URL}/api/v1/auth/me")
+          echo "GET /api/v1/auth/me → ${CODE}"
+          test "${CODE}" = "401"
+          grep -qi 'application/json\|"success"\|"error"' /tmp/me.json || cat /tmp/me.json
